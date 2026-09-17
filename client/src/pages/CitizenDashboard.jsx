@@ -1,3 +1,6 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { UserCheck, PlusCircle, MapPin, Calendar, Layers, ArrowRight, CheckCircle2, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { api } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
@@ -25,27 +28,47 @@ export default function CitizenDashboard() {
     return true;
   });
 
+  const totalReports = issues.length;
+  const inProgressReports = issues.filter(i => i.status === 'IN_PROGRESS' || i.status === 'ASSIGNED').length;
+  const resolvedReports = issues.filter(i => i.status === 'RESOLVED').length;
+
   return (
     <div className="space-y-8 py-6 max-w-6xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
         <div>
           <h1 className="text-3xl font-bold text-white flex items-center gap-2">
             <UserCheck className="w-7 h-7 text-cyan-400" />
             My Citizen Reports
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-400 mt-1">
             Track real-time resolution progress of issues reported by you and your community.
           </p>
         </div>
 
         <Link
           to="/report"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-cyan-500/20"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs transition-all shadow-md shadow-cyan-500/20"
         >
           <PlusCircle className="w-4 h-4" />
           Report New Issue
         </Link>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-3 gap-4">
+        <div className="glass-card p-4 rounded-xl border border-slate-800 space-y-1">
+          <span className="text-[10px] text-slate-400 uppercase font-mono block">Total Submitted</span>
+          <span className="text-2xl font-bold text-white">{totalReports}</span>
+        </div>
+        <div className="glass-card p-4 rounded-xl border border-cyan-500/30 space-y-1">
+          <span className="text-[10px] text-cyan-400 uppercase font-mono block">In Progress</span>
+          <span className="text-2xl font-bold text-cyan-400">{inProgressReports}</span>
+        </div>
+        <div className="glass-card p-4 rounded-xl border border-emerald-500/30 space-y-1">
+          <span className="text-[10px] text-emerald-400 uppercase font-mono block font-bold">Resolved & Verified</span>
+          <span className="text-2xl font-bold text-emerald-400">{resolvedReports}</span>
+        </div>
       </div>
 
       {/* Filter Tabs */}
@@ -72,10 +95,10 @@ export default function CitizenDashboard() {
 
       {/* Issues Grid */}
       {loading ? (
-        <div className="text-center py-12 text-xs text-slate-400 font-mono">Loading reports...</div>
+        <div className="text-center py-16 text-xs text-slate-400 font-mono">Loading citizen reports...</div>
       ) : filteredIssues.length === 0 ? (
         <div className="glass-card p-12 text-center rounded-2xl border border-slate-800 space-y-3">
-          <p className="text-sm text-slate-300">No issue reports found matching this filter.</p>
+          <p className="text-sm text-slate-300">No citizen issue reports found matching this filter.</p>
           <Link to="/report" className="text-xs text-cyan-400 font-medium hover:underline inline-block">
             Submit a new citizen report →
           </Link>
@@ -88,11 +111,11 @@ export default function CitizenDashboard() {
             return (
               <div
                 key={issue.issueId}
-                className="glass-card p-5 rounded-xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4 group"
+                className="glass-card p-5 rounded-2xl border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4 group"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs text-cyan-400 font-bold">{issue.issueId}</span>
+                    <span className="font-mono text-xs text-cyan-400 font-bold">Report #{issue.issueId}</span>
                     <div className="flex items-center gap-2">
                       <StatusBadge status={issue.status} />
                       <SeverityBadge severity={issue.severity} />
@@ -113,20 +136,20 @@ export default function CitizenDashboard() {
                   </div>
 
                   {/* INCIDENT GROUPING BADGE */}
-                  <div className="bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
-                    <span className="flex items-center gap-1.5">
+                  <div className="bg-slate-900/90 px-3.5 py-2 rounded-xl border border-cyan-500/20 text-xs text-slate-300 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 font-mono text-[11px]">
                       <Layers className="w-3.5 h-3.5 text-cyan-400" />
-                      Incident <span className="font-mono font-semibold text-slate-300">{issue.incidentId}</span>
+                      Incident <strong className="text-white">{issue.incidentId}</strong>
                     </span>
-                    <span className="font-mono text-cyan-300 font-semibold">
-                      {linkedCount} {linkedCount === 1 ? 'report' : 'reports'} → 1 incident
+                    <span className="font-mono text-cyan-300 text-[11px] font-semibold">
+                      {linkedCount} {linkedCount === 1 ? 'Report' : 'Reports'} → 1 Work Order
                     </span>
                   </div>
                 </div>
 
                 <Link
                   to={`/issues/${issue.issueId}`}
-                  className="w-full py-2 px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border border-slate-800"
+                  className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors border border-slate-800"
                 >
                   View Full Timeline & Details
                   <ArrowRight className="w-3.5 h-3.5 text-cyan-400 group-hover:translate-x-1 transition-transform" />
