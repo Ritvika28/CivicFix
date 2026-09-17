@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://pydl91v2p0.execute-api.ap-south-1.amazonaws.com';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://pi3cxuy7oa.execute-api.ap-south-1.amazonaws.com';
 
 export const awsApi = {
   /**
