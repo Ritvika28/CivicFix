@@ -1,0 +1,457 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  CivicFix — Production-Ready Serverless Architecture Template
+  Region: ap-south-1 (Asia Pacific - Mumbai)
+  Services: API Gateway HTTP API, AWS Lambda, Amazon DynamoDB, Amazon S3.
+
+Globals:
+  Function:
+    Timeout: 15
+    MemorySize: 256
+    Runtime: nodejs20.x
+    Architectures:
+      - arm64
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref CivicFixIssuesTable
+        BUCKET_NAME: !Ref CivicFixImagesBucket
+        AWS_NODEJS_CONNECTION_REUSE_ALIVE: '1'
+
+Resources:
+
+  # ------------------------------------------------------------
+  # DYNAMODB TABLE (Single-table design for reports & incidents)
+  # ------------------------------------------------------------
+  CivicFixIssuesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: CivicFixIssues
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: issueId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: issueId
+          KeyType: HASH
+      SSESpecification:
+        SSEEnabled: true
+
+  # ------------------------------------------------------------
+  # S3 BUCKET (100% Private image bucket for reports & resolutions)
+  # ------------------------------------------------------------
+  CivicFixImagesBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'civicfix-images-${AWS::AccountId}-${AWS::Region}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders: ['*']
+            AllowedMethods: ['GET', 'PUT', 'HEAD']
+            AllowedOrigins: ['*']
+            MaxAge: 3000
+
+  # ------------------------------------------------------------
+  # API GATEWAY (HTTP API v2)
+  # ------------------------------------------------------------
+  CivicFixHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: CivicFixHttpApi
+      CorsConfiguration:
+        AllowHeaders: ['Content-Type', 'Authorization']
+        AllowMethods: ['GET', 'POST', 'PATCH', 'OPTIONS']
+        AllowOrigins: ['*']
+
+  # ------------------------------------------------------------
+  # LAMBDA FUNCTIONS (CommonJS InlineCode with Node.js 20 SDK)
+  # ------------------------------------------------------------
+
+  # 1. Create Issue Function (POST /issues)
+  CreateIssueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      InlineCode: |
+        const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+        const { DynamoDBDocumentClient, PutCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+
+        const client = new DynamoDBClient({});
+        const docClient = DynamoDBDocumentClient.from(client);
+        const TABLE_NAME = process.env.TABLE_NAME || 'CivicFixIssues';
+        const STOP_WORDS = new Set(["a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "has", "in", "is", "it", "of", "on", "that", "the", "to", "with"]);
+
+        function calculateDistanceMeters(lat1, lon1, lat2, lon2) {
+          if (lat1 === lat2 && lon1 === lon2) return 0;
+          const R = 6371e3;
+          const rad = Math.PI / 180;
+          const dLat = (lat2 - lat1) * rad;
+          const dLon = (lon2 - lon1) * rad;
+          const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * rad) * Math.cos(lat2 * rad) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+          return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+        }
+
+        function tokenize(text) {
+          if (!text) return new Set();
+          const tokens = text.toLowerCase().replace(/[^\w\s]/gi, '').split(/\s+/).filter(t => t.length > 2 && !STOP_WORDS.has(t));
+          return new Set(tokens);
+        }
+
+        function calculateJaccardSimilarity(textA, textB) {
+          const setA = tokenize(textA);
+          const setB = tokenize(textB);
+          if (setA.size === 0 || setB.size === 0) return 0;
+          const intersection = new Set([...setA].filter(x => setB.has(x)));
+          const union = new Set([...setA, ...setB]);
+          return intersection.size / union.size;
+        }
+
+        exports.handler = async (event) => {
+          try {
+            const body = JSON.parse(event.body || '{}');
+            if (!body.description) {
+              return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'Description is required' }) };
+            }
+
+            const lat = Number(body.latitude || 26.7998);
+            const lon = Number(body.longitude || 81.0267);
+
+            const scanRes = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+            const existingIssues = scanRes.Items || [];
+
+            let bestMatch = null;
+            let maxScore = 0;
+
+            for (const item of existingIssues) {
+              const dist = calculateDistanceMeters(lat, lon, item.latitude, item.longitude);
+              const locScore = dist < 100 ? (1 - dist / 100) : 0;
+              const catScore = (body.category === item.category) ? 1.0 : 0.0;
+              const textScore = calculateJaccardSimilarity(body.description, item.description);
+              const score = (locScore * 0.4) + (catScore * 0.3) + (textScore * 0.3);
+              if (score > maxScore) {
+                maxScore = score;
+                bestMatch = { item, score, dist };
+              }
+            }
+
+            const isDuplicate = maxScore >= 0.70 && bestMatch !== null;
+            const issueId = `CF-${1000 + existingIssues.length + 1}`;
+            const incidentId = isDuplicate ? bestMatch.item.incidentId : `INC-${1000 + existingIssues.length + 1}`;
+            const duplicateOf = isDuplicate ? (bestMatch.item.duplicateOf || bestMatch.item.issueId) : null;
+
+            const newIssue = {
+              issueId,
+              incidentId,
+              category: body.category || 'OTHER',
+              issueType: body.issueType || 'GENERAL_CIVIC',
+              description: body.description,
+              summary: body.summary || body.description,
+              severity: body.severity || 'MEDIUM',
+              status: 'REPORTED',
+              department: body.department || 'GENERAL_SERVICES',
+              latitude: lat,
+              longitude: lon,
+              locationLabel: body.locationLabel || 'Campus Location',
+              imageKey: body.imageKey || null,
+              reportedBy: body.reportedBy || 'citizen-user',
+              duplicateOf,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            };
+
+            await docClient.send(new PutCommand({ TableName: TABLE_NAME, Item: newIssue }));
+
+            return {
+              statusCode: 201,
+              headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+              body: JSON.stringify({ issue: newIssue, isDuplicate, duplicateScore: Number(maxScore.toFixed(2)), linkedIncidentId: incidentId })
+            };
+          } catch (err) {
+            return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: err.message }) };
+          }
+        };
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+                - dynamodb:Scan
+                - dynamodb:GetItem
+              Resource: !GetAtt CivicFixIssuesTable.Arn
+      Events:
+        CreateIssueApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CivicFixHttpApi
+            Path: /issues
+            Method: POST
+
+  # 2. List Issues Function (GET /issues)
+  ListIssuesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      InlineCode: |
+        const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+        const { DynamoDBDocumentClient, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+
+        const client = new DynamoDBClient({});
+        const docClient = DynamoDBDocumentClient.from(client);
+        const TABLE_NAME = process.env.TABLE_NAME || 'CivicFixIssues';
+
+        exports.handler = async (event) => {
+          try {
+            const params = event.queryStringParameters || {};
+            const res = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+            let items = res.Items || [];
+
+            if (params.status) items = items.filter(i => i.status === params.status);
+            if (params.category) items = items.filter(i => i.category === params.category);
+            if (params.department) items = items.filter(i => i.department === params.department);
+
+            return {
+              statusCode: 200,
+              headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+              body: JSON.stringify(items)
+            };
+          } catch (err) {
+            return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: err.message }) };
+          }
+        };
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:Scan
+                - dynamodb:Query
+              Resource: !GetAtt CivicFixIssuesTable.Arn
+      Events:
+        ListIssuesApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CivicFixHttpApi
+            Path: /issues
+            Method: GET
+
+  # 3. Get Issue Function (GET /issues/{issueId})
+  GetIssueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      InlineCode: |
+        const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+        const { DynamoDBDocumentClient, GetCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+
+        const client = new DynamoDBClient({});
+        const docClient = DynamoDBDocumentClient.from(client);
+        const TABLE_NAME = process.env.TABLE_NAME || 'CivicFixIssues';
+
+        exports.handler = async (event) => {
+          try {
+            const issueId = event.pathParameters?.issueId;
+            if (!issueId) {
+              return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'issueId required' }) };
+            }
+
+            const res = await docClient.send(new GetCommand({ TableName: TABLE_NAME, Key: { issueId } }));
+            if (!res.Item) {
+              return { statusCode: 404, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'Issue not found' }) };
+            }
+
+            const scanRes = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+            const allIssues = scanRes.Items || [];
+            const incidentReports = allIssues.filter(i => i.incidentId === res.Item.incidentId);
+
+            return {
+              statusCode: 200,
+              headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+              body: JSON.stringify({ issue: res.Item, incidentReports, incidentReportCount: incidentReports.length })
+            };
+          } catch (err) {
+            return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: err.message }) };
+          }
+        };
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:Scan
+              Resource: !GetAtt CivicFixIssuesTable.Arn
+      Events:
+        GetIssueApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CivicFixHttpApi
+            Path: /issues/{issueId}
+            Method: GET
+
+  # 4. Update Issue Function (PATCH /issues/{issueId})
+  UpdateIssueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      InlineCode: |
+        const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
+        const { DynamoDBDocumentClient, GetCommand, UpdateCommand, ScanCommand } = require('@aws-sdk/lib-dynamodb');
+
+        const client = new DynamoDBClient({});
+        const docClient = DynamoDBDocumentClient.from(client);
+        const TABLE_NAME = process.env.TABLE_NAME || 'CivicFixIssues';
+
+        exports.handler = async (event) => {
+          try {
+            const issueId = event.pathParameters?.issueId;
+            const body = JSON.parse(event.body || '{}');
+            if (!issueId) {
+              return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'issueId required' }) };
+            }
+
+            const currentRes = await docClient.send(new GetCommand({ TableName: TABLE_NAME, Key: { issueId } }));
+            if (!currentRes.Item) {
+              return { statusCode: 404, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'Issue not found' }) };
+            }
+
+            const existing = currentRes.Item;
+            const newStatus = body.status || existing.status;
+            const newDept = body.department || existing.department;
+            const newAssigned = body.assignedTo !== undefined ? body.assignedTo : existing.assignedTo;
+            const newResNote = body.resolutionNote !== undefined ? body.resolutionNote : existing.resolutionNote;
+            const newResImg = body.resolutionImageKey !== undefined ? body.resolutionImageKey : existing.resolutionImageKey;
+            const newVerification = body.verificationStatus !== undefined ? body.verificationStatus : existing.verificationStatus;
+            const now = new Date().toISOString();
+            const resolvedAt = (newStatus === 'RESOLVED' && !existing.resolvedAt) ? now : existing.resolvedAt;
+
+            if (body.propagateToIncident && existing.incidentId) {
+              const scanRes = await docClient.send(new ScanCommand({ TableName: TABLE_NAME }));
+              const allIssues = scanRes.Items || [];
+              const incidentItems = allIssues.filter(i => i.incidentId === existing.incidentId);
+
+              for (const item of incidentItems) {
+                await docClient.send(new UpdateCommand({
+                  TableName: TABLE_NAME,
+                  Key: { issueId: item.issueId },
+                  UpdateExpression: 'SET #st = :st, department = :dp, assignedTo = :as, resolutionNote = :rn, resolutionImageKey = :ri, resolvedAt = :ra, updatedAt = :u',
+                  ExpressionAttributeNames: { '#st': 'status' },
+                  ExpressionAttributeValues: { ':st': newStatus, ':dp': newDept, ':as': newAssigned, ':rn': newResNote, ':ri': newResImg, ':ra': resolvedAt, ':u': now }
+                }));
+              }
+            } else {
+              await docClient.send(new UpdateCommand({
+                TableName: TABLE_NAME,
+                Key: { issueId },
+                UpdateExpression: 'SET #st = :st, department = :dp, assignedTo = :as, resolutionNote = :rn, resolutionImageKey = :ri, verificationStatus = :vs, resolvedAt = :ra, updatedAt = :u',
+                ExpressionAttributeNames: { '#st': 'status' },
+                ExpressionAttributeValues: { ':st': newStatus, ':dp': newDept, ':as': newAssigned, ':rn': newResNote, ':ri': newResImg, ':vs': newVerification, ':ra': resolvedAt, ':u': now }
+              }));
+            }
+
+            return {
+              statusCode: 200,
+              headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+              body: JSON.stringify({ message: `Issue ${issueId} updated successfully` })
+            };
+          } catch (err) {
+            return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: err.message }) };
+          }
+        };
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
+                - dynamodb:Scan
+              Resource: !GetAtt CivicFixIssuesTable.Arn
+      Events:
+        UpdateIssueApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CivicFixHttpApi
+            Path: /issues/{issueId}
+            Method: PATCH
+
+  # 5. Create Upload Presigned URL Function (POST /uploads/presigned-url)
+  CreateUploadUrlFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      InlineCode: |
+        const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3');
+        const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+
+        const s3Client = new S3Client({});
+        const BUCKET_NAME = process.env.BUCKET_NAME || 'civicfix-images-demo';
+
+        exports.handler = async (event) => {
+          try {
+            const body = JSON.parse(event.body || '{}');
+            const action = body.action || 'upload';
+
+            if (action === 'download' && body.imageKey) {
+              const command = new GetObjectCommand({
+                Bucket: BUCKET_NAME,
+                Key: body.imageKey
+              });
+              const downloadUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+              return {
+                statusCode: 200,
+                headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+                body: JSON.stringify({ downloadUrl, expiresInSeconds: 3600 })
+              };
+            }
+
+            const filename = body.filename || 'photo.jpg';
+            const contentType = body.contentType || 'image/jpeg';
+            const folder = body.folder || 'reports';
+
+            const cleanFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+            const objectKey = `${folder}/${Date.now()}_${cleanFilename}`;
+
+            const command = new PutObjectCommand({
+              Bucket: BUCKET_NAME,
+              Key: objectKey,
+              ContentType: contentType
+            });
+
+            const uploadUrl = await getSignedUrl(s3Client, command, { expiresIn: 900 });
+
+            return {
+              statusCode: 200,
+              headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+              body: JSON.stringify({ uploadUrl, imageKey: objectKey, expiresInSeconds: 900 })
+            };
+          } catch (err) {
+            return { statusCode: 500, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: err.message }) };
+          }
+        };
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - s3:PutObject
+                - s3:GetObject
+              Resource: !Sub 'arn:aws:s3:::civicfix-images-${AWS::AccountId}-${AWS::Region}/*'
+      Events:
+        CreateUploadUrlApi:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref CivicFixHttpApi
+            Path: /uploads/presigned-url
+            Method: POST
+
+Outputs:
+  ApiEndpoint:
+    Description: HTTP API Gateway base endpoint URL
+    Value: !Sub 'https://${CivicFixHttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+  TableName:
+    Description: DynamoDB Table Name
+    Value: !Ref CivicFixIssuesTable
+  BucketName:
+    Description: S3 Image Bucket Name
+    Value: !Ref CivicFixImagesBucket

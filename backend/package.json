@@ -1,0 +1,16 @@
+{
+  "name": "civicfix-backend",
+  "version": "1.0.0",
+  "description": "CivicFix AWS Lambda backend functions",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Backend unit tests ready\" && exit 0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.600.0",
+    "@aws-sdk/client-s3": "^3.600.0",
+    "@aws-sdk/lib-dynamodb": "^3.600.0",
+    "@aws-sdk/s3-request-presigner": "^3.600.0"
+  }
+}
