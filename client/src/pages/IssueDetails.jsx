@@ -4,6 +4,7 @@ import { ArrowLeft, MapPin, Calendar, Layers, Sparkles, CheckCircle2, XCircle, A
 import { api } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
+import S3Image from '../components/S3Image';
 
 export default function IssueDetails() {
   const { id } = useParams();
@@ -32,12 +33,12 @@ export default function IssueDetails() {
     if (!data || !data.issue) return;
 
     if (isFixed) {
-      await api.updateIssue(id, {
+      await api.updateIssue(data.issue.issueId, {
         verificationStatus: 'CONFIRMED'
       });
       setUserFeedbackMsg('Thank you for confirming resolution! Your feedback is registered.');
     } else {
-      await api.updateIssue(id, {
+      await api.updateIssue(data.issue.issueId, {
         status: 'NEEDS_VERIFICATION',
         verificationStatus: 'REJECTED',
         propagateToIncident: true
@@ -114,7 +115,7 @@ export default function IssueDetails() {
             <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
               <span>📍 {issue.locationLabel}</span>
               <span>•</span>
-              <span>Reported {new Date(issue.reportedAt).toLocaleString()}</span>
+              <span>Reported {issue.reportedAt || issue.createdAt ? new Date(issue.reportedAt || issue.createdAt).toLocaleString() : 'Just now'}</span>
             </p>
           </div>
 
@@ -168,12 +169,12 @@ export default function IssueDetails() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-slate-400 block font-mono">BEFORE (Citizen Report Photo)</span>
-                <img src={issue.imageKey} alt="Before report photo" className="w-full h-48 object-cover rounded-xl border border-slate-800" />
+                <S3Image src={issue.imageKey} alt="Before report photo" className="w-full h-48 object-cover rounded-xl border border-slate-800" />
               </div>
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-emerald-400 block font-mono">AFTER (Authority Proof Photo)</span>
-                <img
-                  src={issue.resolutionImageKey || "https://images.unsplash.com/photo-1517646287270-a5a9ca602e5c?auto=format&fit=crop&w=800&q=80"}
+                <S3Image
+                  src={issue.resolutionImageKey}
                   alt="After resolution photo"
                   className="w-full h-48 object-cover rounded-xl border border-emerald-500/30"
                 />

@@ -4,6 +4,7 @@ import { ArrowLeft, LayoutDashboard, Upload, CheckCircle2, AlertTriangle, Layers
 import { api } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
+import S3Image from '../components/S3Image';
 
 export default function AdminIssueDetails() {
   const { id } = useParams();
@@ -86,7 +87,7 @@ export default function AdminIssueDetails() {
         propagateToIncident: true // Propagates resolution across all linked citizen reports
       };
 
-      await api.updateIssue(id, updates);
+      await api.updateIssue(data.issue.issueId, updates);
       setSuccessMsg(`Incident #${data.issue.incidentId} updated successfully! Propagated to all ${data.incidentReportCount} linked citizen reports.`);
       loadDetails();
     } catch (err) {
@@ -158,7 +159,7 @@ export default function AdminIssueDetails() {
 
             <div className="space-y-2">
               <span className="text-xs font-mono text-slate-400 uppercase font-semibold block">Citizen Submitted Photo</span>
-              <img src={issue.imageKey} alt="Citizen report photo" className="w-full h-56 object-cover rounded-xl border border-slate-800" />
+              <S3Image src={issue.imageKey} alt="Citizen report photo" className="w-full h-56 object-cover rounded-xl border border-slate-800" />
             </div>
 
             {/* Linked Reports under same incident */}

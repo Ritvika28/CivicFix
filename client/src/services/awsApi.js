@@ -13,12 +13,33 @@ export const awsApi = {
   },
 
   /**
-   * Fetch single issue details from DynamoDB
+   * Fetch single issue details from DynamoDB with incident lookup fallback
    */
   async getIssueById(issueId) {
-    const res = await fetch(`${API_BASE_URL}/issues/${issueId}`);
-    if (!res.ok) throw new Error(`API error: ${res.statusText}`);
-    return await res.json();
+    try {
+      const res = await fetch(`${API_BASE_URL}/issues/${issueId}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.issue) return data;
+      }
+    } catch (err) {
+      console.warn(`Direct lookup for issueId ${issueId} failed, falling back to list scan:`, err);
+    }
+
+    // Fallback: If direct /issues/{issueId} returns 404 (e.g. if issueId is an INC-xxxx incident ID or duplicate ID),
+    // scan all issues from DynamoDB and locate the record by issueId or incidentId
+    const allIssues = await this.getIssues();
+    const issue = allIssues.find(i => i.issueId === issueId || i.incidentId === issueId);
+    if (!issue) {
+      throw new Error(`Issue or Incident ${issueId} not found`);
+    }
+
+    const incidentReports = allIssues.filter(i => i.incidentId === issue.incidentId);
+    return {
+      issue,
+      incidentReports,
+      incidentReportCount: incidentReports.length
+    };
   },
 
   /**
@@ -50,13 +71,37 @@ export const awsApi = {
   /**
    * Request S3 Presigned Upload URL from Lambda
    */
-  async createUploadUrl(filename, contentType) {
+  async createUploadUrl(filename, contentType, folder = 'reports') {
     const res = await fetch(`${API_BASE_URL}/uploads/presigned-url`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filename, contentType })
+      body: JSON.stringify({ filename, contentType, folder })
     });
     if (!res.ok) throw new Error(`API error: ${res.statusText}`);
     return await res.json();
+  },
+
+  /**
+   * Request Presigned S3 Download URL for private object keys
+   */
+  async getDownloadUrl(imageKey) {
+    if (!imageKey) return null;
+    if (imageKey.startsWith('http://') || imageKey.startsWith('https://') || imageKey.startsWith('data:')) {
+      return imageKey;
+    }
+    try {
+      const res = await fetch(`${API_BASE_URL}/uploads/presigned-url`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'download', imageKey })
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.downloadUrl;
+    } catch (err) {
+      console.warn('Failed to fetch presigned download URL:', err);
+      return null;
+    }
   }
 };
+

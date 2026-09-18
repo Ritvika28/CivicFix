@@ -58,15 +58,18 @@ export const mockApi = {
   },
 
   /**
-   * Fetch single issue by issueId along with associated incident reports
+   * Fetch single issue by issueId or incidentId along with associated incident reports
    */
   async getIssueById(issueId) {
     await new Promise(r => setTimeout(r, 200));
     const issues = loadIssuesFromStorage();
-    const issue = issues.find(i => i.issueId === issueId);
+    let issue = issues.find(i => i.issueId === issueId);
+    if (!issue) {
+      issue = issues.find(i => i.incidentId === issueId);
+    }
 
     if (!issue) {
-      throw new Error(`Issue ${issueId} not found`);
+      throw new Error(`Issue or Incident ${issueId} not found`);
     }
 
     // Find all reports linked under the same incidentId

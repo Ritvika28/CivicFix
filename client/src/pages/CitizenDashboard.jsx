@@ -131,7 +131,7 @@ export default function CitizenDashboard() {
                     </span>
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                      {new Date(issue.reportedAt).toLocaleDateString()}
+                      {issue.reportedAt || issue.createdAt ? new Date(issue.reportedAt || issue.createdAt).toLocaleDateString() : 'Recent'}
                     </span>
                   </div>
 
