@@ -100,7 +100,7 @@ export default function Home() {
               </div>
               <h3 className="font-bold text-white text-base">Duplicate Clustering Engine</h3>
               <p className="text-xs text-slate-300 leading-relaxed">
-                Calculates spatial distance ($\le 100\text{m}$) using Haversine formula and text similarity ($\ge 0.70$) using Jaccard coefficient.
+                Calculates spatial distance (≤ 100m) using Haversine formula and text similarity (≥ 0.70) using Jaccard coefficient.
               </p>
             </div>
             <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center text-xs font-mono text-cyan-300">
