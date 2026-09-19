@@ -209,6 +209,17 @@ export const mockApi = {
   },
 
   /**
+   * Mock Presigned S3 Download URL Resolver
+   */
+  async getDownloadUrl(imageKey) {
+    if (!imageKey) return null;
+    if (imageKey.startsWith('http://') || imageKey.startsWith('https://') || imageKey.startsWith('data:')) {
+      return imageKey;
+    }
+    return "https://images.unsplash.com/photo-1517646287270-a5a9ca602e5c?auto=format&fit=crop&w=800&q=80";
+  },
+
+  /**
    * Reset storage to initial demo state
    */
   resetDemoData() {

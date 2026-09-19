@@ -64,17 +64,21 @@ export default function AdminIssueDetails() {
       // Presigned S3 upload if new resolution photo selected
       if (afterImageFile) {
         try {
-          const presignedRes = await api.createUploadUrl(afterImageFile.name, afterImageFile.type, 'resolutions');
-          if (presignedRes.uploadUrl) {
-            await fetch(presignedRes.uploadUrl, {
+          const fileType = afterImageFile.type || 'image/jpeg';
+          const presignedRes = await api.createUploadUrl(afterImageFile.name, fileType, 'resolutions');
+          if (presignedRes && presignedRes.uploadUrl) {
+            const uploadRes = await fetch(presignedRes.uploadUrl, {
               method: 'PUT',
-              headers: { 'Content-Type': afterImageFile.type },
+              headers: { 'Content-Type': fileType },
               body: afterImageFile
             });
+            if (!uploadRes.ok) {
+              throw new Error(`S3 resolution PUT failed with HTTP status ${uploadRes.status}`);
+            }
             finalAfterImageKey = presignedRes.imageKey;
           }
         } catch (uploadErr) {
-          console.warn('Presigned upload fallback to preview data URL:', uploadErr);
+          console.warn('Presigned resolution upload fallback to preview data URL:', uploadErr);
         }
       }
 

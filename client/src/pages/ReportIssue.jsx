@@ -87,17 +87,21 @@ export default function ReportIssue() {
       let finalImageKey = null;
       if (imageFile) {
         try {
-          const presignedRes = await api.createUploadUrl(imageFile.name, imageFile.type, 'reports');
-          if (presignedRes.uploadUrl) {
-            await fetch(presignedRes.uploadUrl, {
+          const fileType = imageFile.type || 'image/jpeg';
+          const presignedRes = await api.createUploadUrl(imageFile.name, fileType, 'reports');
+          if (presignedRes && presignedRes.uploadUrl) {
+            const uploadRes = await fetch(presignedRes.uploadUrl, {
               method: 'PUT',
-              headers: { 'Content-Type': imageFile.type },
+              headers: { 'Content-Type': fileType },
               body: imageFile
             });
+            if (!uploadRes.ok) {
+              throw new Error(`S3 PUT failed with HTTP status ${uploadRes.status}`);
+            }
             finalImageKey = presignedRes.imageKey;
           }
         } catch (uploadErr) {
-          console.warn('Presigned upload fallback to preview data URL:', uploadErr);
+          console.warn('Presigned S3 upload fallback to preview data URL:', uploadErr);
           finalImageKey = imagePreview;
         }
       }
@@ -122,7 +126,7 @@ export default function ReportIssue() {
         latitude: lat,
         longitude: lng,
         locationLabel: label,
-        imageKey: finalImageKey || imagePreview || "https://images.unsplash.com/photo-1517646287270-a5a9ca602e5c?auto=format&fit=crop&w=800&q=80",
+        imageKey: finalImageKey || imagePreview || null,
         reportedBy: "citizen-user"
       });
 
