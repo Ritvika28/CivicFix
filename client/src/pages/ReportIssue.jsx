@@ -197,7 +197,7 @@ export default function ReportIssue() {
                   {imagePreview ? (
                     <div className="relative group">
                       <img src={imagePreview} alt="Upload preview" className="max-h-48 mx-auto rounded-lg object-cover shadow-sm" />
-                      <div className="absolute inset-0 bg-civic-dark/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-sm font-bold text-white rounded-lg">
+                      <div className="absolute inset-0 bg-[#EEF4EA]/90 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-sm font-extrabold text-civic-dark rounded-lg border border-civic-300">
                         Click to change photo
                       </div>
                     </div>
@@ -285,9 +285,9 @@ export default function ReportIssue() {
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full py-4 px-4 rounded-xl bg-civic-primary hover:bg-civic-secondary text-white font-bold text-sm flex items-center justify-center gap-2 shadow-md shadow-civic-primary/20 transition-all"
+                className="w-full py-4 px-4 rounded-xl bg-civic-200 hover:bg-civic-300 text-civic-950 border border-civic-400 font-extrabold text-sm flex items-center justify-center gap-2 shadow-md transition-all"
               >
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-4 h-4 text-civic-950" />
                 Analyze & Submit Report
               </button>
             </form>
@@ -446,9 +446,9 @@ export default function ReportIssue() {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 onClick={() => navigate(`/issues/${createdIssue.issueId}`)}
-                className="flex-1 py-3.5 px-4 rounded-xl bg-civic-primary hover:bg-civic-secondary text-white font-bold text-sm flex items-center justify-center gap-2 transition-colors shadow-sm"
+                className="flex-1 py-3.5 px-4 rounded-xl bg-civic-200 hover:bg-civic-300 text-civic-950 border border-civic-400 font-extrabold text-sm flex items-center justify-center gap-2 transition-colors shadow-sm"
               >
-                View Issue Details <ArrowRight className="w-4 h-4" />
+                View Issue Details <ArrowRight className="w-4 h-4 text-civic-950" />
               </button>
               <button
                 onClick={() => navigate('/citizen')}

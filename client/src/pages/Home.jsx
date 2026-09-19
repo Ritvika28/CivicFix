@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Leaf,
   ArrowRight,
   Map,
   Layers,
@@ -102,20 +101,6 @@ export default function Home() {
 
       {/* ── HERO ── */}
       <section className="relative bg-[#FDFCF8] overflow-hidden">
-        {/* Decorative leaves */}
-        <Leaf
-          className="absolute -top-20 -left-24 w-[420px] h-[420px] text-civic-400/[0.12] -rotate-[35deg] pointer-events-none hidden lg:block z-[1]"
-          strokeWidth={0.75}
-        />
-        <Leaf
-          className="absolute top-12 right-[18%] w-[260px] h-[260px] text-civic-300/[0.14] rotate-[20deg] pointer-events-none hidden lg:block z-[2]"
-          strokeWidth={0.75}
-        />
-        <Leaf
-          className="absolute bottom-6 right-[8%] w-[140px] h-[140px] text-civic-400/[0.09] rotate-[145deg] pointer-events-none hidden xl:block z-[2]"
-          strokeWidth={0.75}
-        />
-
         {/* Desktop hero image — contained within overflow-hidden section */}
         <div className="hidden lg:block absolute top-0 right-0 w-[52%] h-full z-0" style={{ maxWidth: '820px' }}>
           <img
@@ -153,9 +138,9 @@ export default function Home() {
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Link
                   to="/report"
-                  className="inline-flex items-center justify-center gap-2 h-[50px] px-6 rounded-[11px] bg-civic-primary hover:bg-civic-secondary text-white font-bold text-[15px] transition-all hover:-translate-y-0.5 shadow-md shadow-civic-700/15"
+                  className="inline-flex items-center justify-center gap-2 h-[50px] px-6 rounded-[11px] bg-civic-200 hover:bg-civic-300 text-civic-950 border border-civic-400 font-extrabold text-[15px] transition-all hover:-translate-y-0.5 shadow-md shadow-civic-700/10"
                 >
-                  Report an Issue <ArrowRight className="w-4 h-4" />
+                  Report an Issue <ArrowRight className="w-4 h-4 text-civic-950" />
                 </Link>
                 <Link
                   to="/citizen"
@@ -237,24 +222,24 @@ export default function Home() {
                     alt={cat.label}
                     className="category-img absolute inset-0 w-full h-full object-cover transition-transform duration-[380ms] ease-[cubic-bezier(0.22,1,0.36,1)]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent group-hover:from-black/80 transition-colors duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#FDFCF8]/95 via-[#FDFCF8]/65 to-transparent group-hover:from-[#FDFCF8] transition-colors duration-300" />
 
                   <div className="absolute inset-0 p-4 flex flex-col justify-between z-10">
-                    <div className={`w-8 h-8 rounded-lg ${ui.color} flex items-center justify-center text-white text-[10px] font-bold shadow-sm`}>
+                    <div className="w-8 h-8 rounded-lg bg-white/95 border border-[#DEE4DA] flex items-center justify-center text-civic-dark text-[10px] font-extrabold shadow-sm">
                       {ui.abv}
                     </div>
 
                     <div className="flex items-end justify-between gap-2">
                       <div className="space-y-1 min-w-0">
-                        <span className="inline-block px-2 py-0.5 bg-white/90 text-slate-700 text-[8px] sm:text-[9px] font-bold uppercase tracking-widest rounded">
+                        <span className="inline-block px-2 py-0.5 bg-civic-100 text-civic-800 border border-civic-200 text-[8px] sm:text-[9px] font-bold uppercase tracking-widest rounded">
                           {cat.department.replace('_', ' ')}
                         </span>
-                        <h3 className="text-[15px] sm:text-[16px] font-bold text-white leading-tight truncate">
+                        <h3 className="text-[15px] sm:text-[16px] font-extrabold text-civic-dark leading-tight truncate">
                           {cat.label}
                         </h3>
                       </div>
-                      <div className="category-arrow w-8 h-8 rounded-full bg-white/95 flex items-center justify-center shrink-0 shadow-sm transition-transform duration-300">
-                        <ArrowRight className="w-4 h-4 text-civic-dark" />
+                      <div className="category-arrow w-8 h-8 rounded-full bg-civic-200 border border-civic-300 flex items-center justify-center shrink-0 shadow-sm transition-transform duration-300">
+                        <ArrowRight className="w-4 h-4 text-civic-950" />
                       </div>
                     </div>
                   </div>

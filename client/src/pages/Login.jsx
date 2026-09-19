@@ -243,18 +243,14 @@ export default function Login() {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-3.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm ${
-              activeRole === 'admin'
-                ? 'bg-civic-700 hover:bg-civic-800 text-white'
-                : 'bg-civic-600 hover:bg-civic-700 text-white'
-            }`}
+            className="w-full py-3.5 px-4 rounded-xl bg-civic-200 hover:bg-civic-300 text-civic-950 border border-civic-400 font-extrabold text-sm transition-all flex items-center justify-center gap-2 shadow-sm"
           >
             {activeRole === 'citizen' ? (
               authMode === 'login' ? 'Sign In to Citizen Portal' : 'Create Citizen Account'
             ) : (
               'Login to Authority Command'
             )}
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-civic-950" />
           </button>
         </form>
 

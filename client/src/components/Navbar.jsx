@@ -92,9 +92,9 @@ export default function Navbar() {
               <span className="text-[11px] text-slate-400 px-3 font-semibold uppercase tracking-widest hidden sm:inline">Role:</span>
               <button
                 onClick={() => handleRoleChange('citizen')}
-                className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-md text-sm font-extrabold transition-all ${
                   userRole === 'citizen'
-                    ? 'bg-civic-600 text-white shadow-sm'
+                    ? 'bg-civic-200 text-civic-950 border border-civic-400 shadow-sm'
                     : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
@@ -102,9 +102,9 @@ export default function Navbar() {
               </button>
               <button
                 onClick={() => handleRoleChange('admin')}
-                className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all ${
+                className={`px-3 py-1.5 rounded-md text-sm font-extrabold transition-all ${
                   userRole === 'admin'
-                    ? 'bg-slate-800 text-white shadow-sm'
+                    ? 'bg-slate-200 text-slate-950 border border-slate-400 shadow-sm'
                     : 'text-slate-500 hover:text-slate-700'
                 }`}
               >
@@ -127,9 +127,9 @@ export default function Navbar() {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-civic-600 hover:bg-civic-700 text-white text-sm font-bold transition-all shadow-sm"
+                className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-civic-200 hover:bg-civic-300 text-civic-950 border border-civic-400 text-sm font-bold transition-all shadow-sm"
               >
-                <LogIn className="w-4 h-4" />
+                <LogIn className="w-4 h-4 text-civic-950" />
                 Sign In
               </Link>
             )}

@@ -68,10 +68,11 @@ export default function CitizenDashboard() {
           transition: transform 280ms ease;
         }
         .cr-filter-active {
-          background: #3F7D4A !important;
-          color: #ffffff !important;
-          border-color: #3F7D4A !important;
-          box-shadow: 0 2px 8px rgba(63,125,74,0.20);
+          background: #caecd7 !important;
+          color: #0f261d !important;
+          border-color: #6fc197 !important;
+          box-shadow: 0 2px 8px rgba(30,68,52,0.12);
+          font-weight: 800 !important;
         }
         .cr-filter-btn {
           background: #ffffff;
@@ -96,12 +97,9 @@ export default function CitizenDashboard() {
       <div className="max-w-[1380px] mx-auto px-4 sm:px-5 lg:px-8 space-y-6" style={{ boxSizing: 'border-box' }}>
 
         {/* ── PAGE HEADER ── */}
-        <div
-          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm"
-          style={{ border: '1px solid #DDE4DA' }}
-        >
-          <div className="space-y-1.5">
-            <h1 className="text-[24px] sm:text-[26px] font-extrabold tracking-tight flex items-center gap-3" style={{ color: '#14231B' }}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <h1 className="text-[26px] sm:text-[30px] font-extrabold text-civic-dark tracking-tight flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#EEF4EA' }}>
                 <UserCheck className="w-5 h-5" style={{ color: '#3F7D4A' }} />
               </div>
@@ -114,10 +112,10 @@ export default function CitizenDashboard() {
 
           <Link
             to="/report"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-white font-bold text-[14px] transition-all hover:-translate-y-0.5 shrink-0"
-            style={{ background: '#3F7D4A', boxShadow: '0 4px 14px rgba(63,125,74,0.22)' }}
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-civic-950 font-extrabold text-[14px] transition-all hover:-translate-y-0.5 shrink-0 border border-civic-400"
+            style={{ background: '#caecd7', boxShadow: '0 4px 14px rgba(63,125,74,0.15)' }}
           >
-            <PlusCircle className="w-4 h-4" />
+            <PlusCircle className="w-4 h-4 text-civic-950" />
             Report New Issue
           </Link>
         </div>

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutDashboard, ShieldAlert, CheckCircle2, Clock, MapPin, Layers, Sparkles, Filter, RefreshCw, BarChart2, Building2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { LayoutDashboard, ShieldAlert, CheckCircle2, Clock, MapPin, Layers, Sparkles, Filter, RefreshCw, BarChart2, Building2, AlertTriangle, ArrowRight, Zap, Target } from 'lucide-react';
 import { api } from '../services/api';
 import { mockApi } from '../services/mockApi';
 import MapView from '../components/MapView';
 import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
+import { detectHotspots, calculateImpactScore, getAiRecommendedAction } from '../utils/intelligenceEngine';
 
 export default function AdminDashboard() {
   const [issues, setIssues] = useState([]);
@@ -132,31 +133,35 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-3 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar">
-              {[
-                { location: 'Gate 2 Entrance', reports: 3, incidents: 1, hazard: 'Streetlight outage cluster (INC-1001)', incidentId: 'INC-1001', severity: 'MEDIUM' },
-                { location: 'Boys Hostel 2', reports: 1, incidents: 1, hazard: 'Exposed live wire (INC-1002)', incidentId: 'INC-1002', severity: 'CRITICAL' },
-                { location: 'Academic Block A', reports: 1, incidents: 1, hazard: 'Overflowing sanitation bin (INC-1003)', incidentId: 'INC-1003', severity: 'MEDIUM' },
-                { location: 'Main Boulevard', reports: 1, incidents: 1, hazard: 'Deep road pothole (INC-1004)', incidentId: 'INC-1004', severity: 'HIGH' }
-              ].map((spot, idx) => (
-                <Link
-                  key={idx}
-                  to={`/admin/issues/${spot.incidentId}`}
-                  className="block bg-slate-50/80 hover:bg-white p-4 rounded-xl border border-slate-200 hover:border-civic-primary/50 hover:shadow-md transition-all space-y-2 group"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-800 text-[13px] group-hover:text-civic-primary flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4 text-slate-400 group-hover:text-civic-primary/70" /> {spot.location}
-                    </span>
-                    <span className="text-[10px] uppercase font-bold text-civic-primary bg-white px-2 py-1 rounded border border-slate-200 shadow-sm">{spot.reports} rep → {spot.incidents} inc</span>
-                  </div>
-                  <p className="text-[12px] font-medium text-slate-600 flex items-center justify-between pl-5.5">
-                    <span className="truncate mr-2">{spot.hazard}</span>
-                    <span className={`text-[9px] uppercase px-2 py-0.5 rounded shadow-sm border ${spot.severity === 'CRITICAL' ? 'text-red-700 bg-red-50 border-red-200 font-bold' : spot.severity === 'HIGH' ? 'text-orange-700 bg-orange-50 border-orange-200 font-bold' : 'text-slate-600 bg-white border-slate-200 font-bold'}`}>
-                      {spot.severity}
-                    </span>
-                  </p>
-                </Link>
-              ))}
+              {detectHotspots(issues).length === 0 ? (
+                <div className="p-8 text-center text-slate-400 font-medium text-xs bg-slate-50 rounded-xl border border-slate-200">
+                  No emerging hotspots detected
+                </div>
+              ) : (
+                detectHotspots(issues).map((spot) => (
+                  <Link
+                    key={spot.id}
+                    to={`/admin/issues/${spot.incidentId}`}
+                    className="block bg-slate-50/80 hover:bg-white p-4 rounded-xl border border-slate-200 hover:border-civic-primary/50 hover:shadow-md transition-all space-y-2 group"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-800 text-[13px] group-hover:text-civic-primary flex items-center gap-1.5">
+                        <MapPin className="w-4 h-4 text-slate-400 group-hover:text-civic-primary/70" /> {spot.location}
+                      </span>
+                      <span className="text-[10px] uppercase font-bold text-civic-primary bg-white px-2 py-1 rounded border border-slate-200 shadow-sm">{spot.reportCount} rep → {spot.incidentCount} inc</span>
+                    </div>
+                    <p className="text-[12px] font-medium text-slate-600 flex items-center justify-between pl-5.5">
+                      <span className="truncate mr-2">{spot.hazardSummary}</span>
+                      <span className={`text-[9px] uppercase px-2 py-0.5 rounded shadow-sm border ${spot.severity === 'CRITICAL' ? 'text-red-700 bg-red-50 border-red-200 font-bold' : spot.severity === 'HIGH' ? 'text-orange-700 bg-orange-50 border-orange-200 font-bold' : 'text-slate-600 bg-white border-slate-200 font-bold'}`}>
+                        {spot.severity}
+                      </span>
+                    </p>
+                    <div className="text-[10px] text-slate-400 font-mono font-medium pl-5.5">
+                      ⚡ {spot.activityText}
+                    </div>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -192,16 +197,17 @@ export default function AdminDashboard() {
           </div>
 
           <div className="overflow-x-auto rounded-xl border border-slate-200 shadow-sm w-full">
-            <table className="w-full text-left text-sm text-slate-700 min-w-[900px]" style={{ tableLayout: 'fixed' }}>
+            <table className="w-full text-left text-sm text-slate-700 min-w-[980px]" style={{ tableLayout: 'fixed' }}>
               <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] font-bold border-b border-slate-200 tracking-widest">
                 <tr>
-                  <th className="p-4 w-[16%]">Incident ID</th>
-                  <th className="p-4 w-[14%]">Report Cluster</th>
-                  <th className="p-4 w-[14%]">Category</th>
-                  <th className="p-4 w-[20%]">Location</th>
+                  <th className="p-4 w-[14%]">Incident ID</th>
+                  <th className="p-4 w-[12%]">Impact Score</th>
+                  <th className="p-4 w-[12%]">Report Cluster</th>
+                  <th className="p-4 w-[12%]">Category</th>
+                  <th className="p-4 w-[16%]">Location</th>
                   <th className="p-4 w-[12%]">Severity</th>
                   <th className="p-4 w-[12%]">Status</th>
-                  <th className="p-4 w-[12%] text-right">Action</th>
+                  <th className="p-4 w-[10%] text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-[13px] font-medium">
@@ -215,13 +221,26 @@ export default function AdminDashboard() {
                       : repList.some(r => r.severity === 'MEDIUM')
                       ? 'MEDIUM'
                       : 'LOW';
-                    return { incId, repList, canonical, highestSev };
+                    const impact = calculateImpactScore(repList, canonical);
+                    const aiAction = getAiRecommendedAction(repList, canonical);
+                    return { incId, repList, canonical, highestSev, impact, aiAction };
                   })
                   .filter(({ canonical }) => filterDepartment === 'ALL' || canonical.department === filterDepartment)
-                  .map(({ incId, repList, canonical, highestSev }) => (
-                    <tr key={incId} className="hover:bg-slate-50/80 transition-colors">
+                  .map(({ incId, repList, canonical, highestSev, impact, aiAction }) => (
+                    <tr key={incId} className={`hover:bg-slate-50/80 transition-colors ${canonical.status === 'REOPENED' ? 'bg-red-50/30' : ''}`}>
                       <td className="p-4 font-bold text-civic-dark">
-                        {incId}
+                        <div>{incId}</div>
+                        {canonical.status === 'REOPENED' && (
+                          <span className="inline-block text-[9px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded border border-red-200 mt-0.5">⚠️ Reopened</span>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 font-bold text-xs">
+                          <Zap className={`w-3.5 h-3.5 ${impact.score >= 75 ? 'text-red-500' : impact.score >= 50 ? 'text-amber-500' : 'text-civic-primary'}`} />
+                          <span className={impact.score >= 75 ? 'text-red-700' : impact.score >= 50 ? 'text-amber-700' : 'text-civic-dark'}>
+                            {impact.score} <span className="text-[10px] text-slate-400 font-normal">/ 100</span>
+                          </span>
+                        </div>
                       </td>
                       <td className="p-4">
                         <span className="px-2.5 py-1 rounded bg-civic-50 border border-civic-100 text-civic-primary text-[10px] font-bold uppercase tracking-wider">
@@ -235,9 +254,9 @@ export default function AdminDashboard() {
                       <td className="p-4 text-right">
                         <Link
                           to={`/admin/issues/${incId}`}
-                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-civic-primary hover:bg-civic-secondary text-white font-bold text-xs transition-colors shadow-sm whitespace-nowrap"
+                          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-civic-200 hover:bg-civic-300 text-civic-950 border border-civic-400 font-extrabold text-xs transition-colors shadow-sm whitespace-nowrap"
                         >
-                          Manage Incident <ArrowRight className="w-3.5 h-3.5" />
+                          Manage Incident <ArrowRight className="w-3.5 h-3.5 text-civic-950" />
                         </Link>
                       </td>
                     </tr>

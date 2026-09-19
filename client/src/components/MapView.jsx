@@ -1,10 +1,11 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { Link } from 'react-router-dom';
 import StatusBadge from './StatusBadge';
 import SeverityBadge from './SeverityBadge';
 import { Layers } from 'lucide-react';
+import { detectHotspots } from '../utils/intelligenceEngine';
 
 // Create SVG custom map icons based on severity
 function createCustomIcon(severity) {
@@ -29,6 +30,8 @@ function createCustomIcon(severity) {
 }
 
 export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom = 16, height = "400px", adminMode = false }) {
+  const hotspots = detectHotspots(issues);
+
   return (
     <div style={{ height }} className="w-full rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative group">
       <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
@@ -36,6 +39,22 @@ export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        {/* Hotspot Radial Circles */}
+        {hotspots.map(spot => (
+          <Circle
+            key={spot.id}
+            center={[spot.latitude, spot.longitude]}
+            radius={spot.radiusMeters || 80}
+            pathOptions={{
+              color: spot.severity === 'CRITICAL' ? '#ef4444' : spot.severity === 'HIGH' ? '#f97316' : '#2b684c',
+              fillColor: spot.severity === 'CRITICAL' ? '#ef4444' : spot.severity === 'HIGH' ? '#f97316' : '#2b684c',
+              fillOpacity: 0.12,
+              weight: 1.5,
+              dashArray: '5, 5'
+            }}
+          />
+        ))}
         {issues.map(issue => {
           const reportCount = issues.filter(i => i.incidentId === issue.incidentId).length;
           return (
@@ -61,8 +80,10 @@ export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom
                   </div>
                   <Link
                     to={adminMode ? `/admin/issues/${issue.incidentId || issue.issueId}` : `/issues/${issue.issueId}`}
-                    className={`block text-center w-full mt-2 py-1.5 px-2 rounded-lg text-white text-xs font-semibold transition-colors shadow-sm ${
-                      adminMode ? 'bg-slate-800 hover:bg-slate-700' : 'bg-civic-600 hover:bg-civic-700'
+                    className={`block text-center w-full mt-2 py-1.5 px-2 rounded-lg text-xs font-extrabold transition-colors shadow-sm border ${
+                      adminMode
+                        ? 'bg-slate-200 hover:bg-slate-300 text-slate-950 border-slate-400'
+                        : 'bg-civic-200 hover:bg-civic-300 text-civic-950 border-civic-400'
                     }`}
                   >
                     {adminMode ? 'Manage Work Order' : 'View Incident Details'}

@@ -5,7 +5,7 @@ const SEVERITY_CONFIG = {
   LOW: { label: 'Low', color: 'bg-slate-50 text-slate-600 border-slate-200 font-bold uppercase tracking-widest', icon: Info },
   MEDIUM: { label: 'Medium', color: 'bg-amber-50 text-amber-700 border-amber-200 font-bold uppercase tracking-widest', icon: AlertCircle },
   HIGH: { label: 'High', color: 'bg-orange-50 text-orange-700 border-orange-200 font-bold uppercase tracking-widest', icon: AlertTriangle },
-  CRITICAL: { label: 'CRITICAL', color: 'bg-red-600 text-white border-red-600 font-bold uppercase tracking-widest animate-pulse shadow-sm shadow-red-600/30', icon: ShieldAlert }
+  CRITICAL: { label: 'CRITICAL', color: 'bg-red-100 text-red-900 border-red-300 font-extrabold uppercase tracking-widest animate-pulse shadow-sm', icon: ShieldAlert }
 };
 
 export default function SeverityBadge({ severity }) {

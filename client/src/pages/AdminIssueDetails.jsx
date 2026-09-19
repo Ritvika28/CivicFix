@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, LayoutDashboard, Upload, CheckCircle2, AlertTriangle, Layers, UserCheck, Sparkles, Building2, MapPin } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard, Upload, CheckCircle2, AlertTriangle, Layers, UserCheck, Sparkles, Building2, MapPin, Zap, Target, Check } from 'lucide-react';
 import { api } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
 import S3Image from '../components/S3Image';
+import { calculateImpactScore, getAiRecommendedAction } from '../utils/intelligenceEngine';
 
 export default function AdminIssueDetails() {
   const { id } = useParams();
@@ -118,6 +119,8 @@ export default function AdminIssueDetails() {
   }
 
   const { issue, incidentReports, incidentReportCount } = data;
+  const impact = calculateImpactScore(incidentReports, issue);
+  const aiAction = getAiRecommendedAction(incidentReports, issue);
 
   return (
     <div className="w-full flex-1 flex flex-col items-center justify-start bg-civic-cream py-8 pb-16 px-4 sm:px-5 lg:px-8" style={{ boxSizing: 'border-box' }}>
@@ -131,6 +134,18 @@ export default function AdminIssueDetails() {
             Work Order Incident #{issue.incidentId}
           </span>
         </div>
+
+        {issue.status === 'REOPENED' && (
+          <div className="p-5 rounded-2xl bg-red-50 border border-red-200 text-red-900 space-y-2 shadow-sm">
+            <div className="flex items-center gap-2.5 font-bold text-sm text-red-700">
+              <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
+              <span>INCIDENT REOPENED — CITIZEN VERIFICATION FAILED</span>
+            </div>
+            <p className="text-xs text-red-800 font-medium leading-relaxed pl-7">
+              Reason: {issue.reopenReason || 'Citizen inspected physical site and reported that the issue remains unresolved after authority resolution update.'}
+            </p>
+          </div>
+        )}
 
         {successMsg && (
           <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-green-800 text-[13px] font-bold flex items-center gap-3 shadow-sm">
@@ -154,6 +169,60 @@ export default function AdminIssueDetails() {
                 <div className="flex flex-row sm:flex-col items-center sm:items-end gap-3 shrink-0">
                   <StatusBadge status={issue.status} />
                   <SeverityBadge severity={issue.severity} />
+                </div>
+              </div>
+
+              {/* FEATURE #1: INCIDENT IMPACT SCORE CARD */}
+              <div className="bg-[#F8FAF9] p-6 rounded-2xl border border-slate-200 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-[13px] font-bold text-civic-dark flex items-center gap-2 uppercase tracking-wide">
+                    <Zap className="w-5 h-5 text-civic-primary" /> Incident Impact Score
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[20px] font-extrabold ${impact.score >= 75 ? 'text-red-600' : impact.score >= 50 ? 'text-amber-600' : 'text-civic-primary'}`}>
+                      {impact.score}
+                    </span>
+                    <span className="text-[12px] text-slate-400 font-bold">/ 100</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-1 border-t border-slate-200/60">
+                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Score Breakdown:</span>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium">
+                    {impact.reasons.map((reason, idx) => (
+                      <li key={idx} className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-slate-200/80 shadow-xs">
+                        <Check className="w-3.5 h-3.5 text-civic-primary shrink-0" />
+                        <span>{reason}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              {/* FEATURE #3: AI RECOMMENDED ACTION CARD */}
+              <div className="bg-emerald-50/60 p-6 rounded-2xl border border-emerald-200/80 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-[13px] font-bold text-emerald-950 flex items-center gap-2 uppercase tracking-wide">
+                    <Target className="w-5 h-5 text-civic-primary" /> Recommended Action
+                  </span>
+                  <span className="text-[10px] font-bold text-civic-primary bg-white px-2.5 py-1 rounded border border-emerald-200 uppercase tracking-widest shadow-xs">
+                    {aiAction.priority}
+                  </span>
+                </div>
+
+                <p className="text-[14px] font-bold text-emerald-900 leading-relaxed bg-white p-4 rounded-xl border border-emerald-200 shadow-xs">
+                  "{aiAction.recommendation}"
+                </p>
+
+                <div className="space-y-2 pt-1">
+                  <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">Why this recommendation?</span>
+                  <div className="flex flex-wrap gap-2 text-xs font-medium text-emerald-900">
+                    {aiAction.reasons.map((r, idx) => (
+                      <span key={idx} className="bg-white/90 px-3 py-1 rounded-md border border-emerald-200/70 text-[11px]">
+                        • {r}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -213,41 +282,41 @@ export default function AdminIssueDetails() {
                     type="button"
                     onClick={() => setStatus('VERIFIED')}
                     className={`py-3 px-3 rounded-xl border text-left flex items-center justify-between transition-colors shadow-sm ${
-                      status === 'VERIFIED' ? 'bg-civic-dark text-white border-civic-dark' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                      status === 'VERIFIED' ? 'bg-civic-200 text-civic-950 border-civic-500 font-extrabold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                     }`}
                   >
                     <span>1. Verify</span>
-                    {status === 'VERIFIED' && <CheckCircle2 className="w-4 h-4"/>}
+                    {status === 'VERIFIED' && <CheckCircle2 className="w-4 h-4 text-civic-800"/>}
                   </button>
                   <button
                     type="button"
                     onClick={() => setStatus('ASSIGNED')}
                     className={`py-3 px-3 rounded-xl border text-left flex items-center justify-between transition-colors shadow-sm ${
-                      status === 'ASSIGNED' ? 'bg-civic-dark text-white border-civic-dark' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                      status === 'ASSIGNED' ? 'bg-civic-200 text-civic-950 border-civic-500 font-extrabold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                     }`}
                   >
                     <span>2. Assign</span>
-                    {status === 'ASSIGNED' && <CheckCircle2 className="w-4 h-4"/>}
+                    {status === 'ASSIGNED' && <CheckCircle2 className="w-4 h-4 text-civic-800"/>}
                   </button>
                   <button
                     type="button"
                     onClick={() => setStatus('IN_PROGRESS')}
                     className={`py-3 px-3 rounded-xl border text-left flex items-center justify-between transition-colors shadow-sm ${
-                      status === 'IN_PROGRESS' ? 'bg-civic-dark text-white border-civic-dark' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                      status === 'IN_PROGRESS' ? 'bg-civic-200 text-civic-950 border-civic-500 font-extrabold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                     }`}
                   >
                     <span>3. In Progress</span>
-                    {status === 'IN_PROGRESS' && <CheckCircle2 className="w-4 h-4"/>}
+                    {status === 'IN_PROGRESS' && <CheckCircle2 className="w-4 h-4 text-civic-800"/>}
                   </button>
                   <button
                     type="button"
                     onClick={() => setStatus('RESOLVED')}
                     className={`py-3 px-3 rounded-xl border text-left flex items-center justify-between transition-colors shadow-sm ${
-                      status === 'RESOLVED' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                      status === 'RESOLVED' ? 'bg-emerald-200 text-emerald-950 border-emerald-500 font-extrabold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                     }`}
                   >
                     <span>4. Resolve</span>
-                    {status === 'RESOLVED' && <CheckCircle2 className="w-4 h-4"/>}
+                    {status === 'RESOLVED' && <CheckCircle2 className="w-4 h-4 text-emerald-800"/>}
                   </button>
                 </div>
               </div>
@@ -328,9 +397,9 @@ export default function AdminIssueDetails() {
 
               <button
                 type="submit"
-                className="w-full py-4 px-4 rounded-xl bg-civic-primary hover:bg-civic-secondary text-white font-bold text-[13px] shadow-sm transition-colors flex justify-center items-center gap-2 uppercase tracking-wide mt-2"
+                className="w-full py-4 px-4 rounded-xl bg-civic-200 hover:bg-civic-300 text-civic-950 border border-civic-400 font-extrabold text-[13px] shadow-sm transition-colors flex justify-center items-center gap-2 uppercase tracking-wide mt-2"
               >
-                <CheckCircle2 className="w-5 h-5" />
+                <CheckCircle2 className="w-5 h-5 text-civic-950" />
                 Update & Propagate
               </button>
             </form>

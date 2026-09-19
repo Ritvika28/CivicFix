@@ -32,20 +32,20 @@ function AuthorityRoute({ children }) {
   if (userRole !== 'admin') {
     return (
       <div className="max-w-md mx-auto my-16 p-8 glass-card rounded-2xl text-center space-y-4 border border-indigo-500/30">
-        <Shield className="w-12 h-12 text-indigo-400 mx-auto" />
-        <h2 className="text-xl font-bold text-white">Authority Access Required</h2>
-        <p className="text-xs text-slate-400 leading-relaxed">
+        <Shield className="w-12 h-12 text-indigo-600 mx-auto" />
+        <h2 className="text-xl font-bold text-civic-dark">Authority Access Required</h2>
+        <p className="text-xs text-slate-600 leading-relaxed font-medium">
           You are currently signed in as a Citizen. The Authority Command Center is restricted to municipal response officers.
         </p>
         <div className="flex items-center justify-center gap-3 pt-2">
           <Link
             to="/login?role=admin"
             onClick={() => logout()}
-            className="py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/20 transition-colors"
+            className="py-2.5 px-4 rounded-xl bg-civic-200 hover:bg-civic-300 text-civic-950 font-extrabold text-xs border border-civic-400 shadow-sm transition-colors"
           >
             Sign In as Authority
           </Link>
-          <Link to="/citizen" className="py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs border border-slate-800 font-medium">
+          <Link to="/citizen" className="py-2.5 px-4 rounded-xl bg-white hover:bg-slate-50 text-civic-dark text-xs border border-slate-300 font-bold shadow-sm">
             My Citizen Dashboard
           </Link>
         </div>
