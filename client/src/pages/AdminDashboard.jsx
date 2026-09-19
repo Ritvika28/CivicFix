@@ -105,7 +105,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* MAP & HOTSPOT SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div id="map" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-bold text-white flex items-center gap-2">
@@ -113,7 +113,7 @@ export default function AdminDashboard() {
             </h2>
             <span className="text-xs text-slate-500 font-mono">OpenStreetMap Tile Layer</span>
           </div>
-          <MapView issues={issues} height="360px" />
+          <MapView issues={issues} height="360px" adminMode={true} />
         </div>
 
         {/* Hotspot & Campus Analytics */}
@@ -129,14 +129,18 @@ export default function AdminDashboard() {
 
           <div className="space-y-3">
             {[
-              { location: 'Gate 2 Entrance', reports: 3, incidents: 1, hazard: 'Streetlight outage cluster (INC-1001)', severity: 'MEDIUM' },
-              { location: 'Boys Hostel 2', reports: 1, incidents: 1, hazard: 'Exposed live wire (INC-1002)', severity: 'CRITICAL' },
-              { location: 'Academic Block A', reports: 1, incidents: 1, hazard: 'Overflowing sanitation bin (INC-1003)', severity: 'MEDIUM' },
-              { location: 'Main Boulevard', reports: 1, incidents: 1, hazard: 'Deep road pothole (INC-1004)', severity: 'HIGH' }
+              { location: 'Gate 2 Entrance', reports: 3, incidents: 1, hazard: 'Streetlight outage cluster (INC-1001)', incidentId: 'INC-1001', severity: 'MEDIUM' },
+              { location: 'Boys Hostel 2', reports: 1, incidents: 1, hazard: 'Exposed live wire (INC-1002)', incidentId: 'INC-1002', severity: 'CRITICAL' },
+              { location: 'Academic Block A', reports: 1, incidents: 1, hazard: 'Overflowing sanitation bin (INC-1003)', incidentId: 'INC-1003', severity: 'MEDIUM' },
+              { location: 'Main Boulevard', reports: 1, incidents: 1, hazard: 'Deep road pothole (INC-1004)', incidentId: 'INC-1004', severity: 'HIGH' }
             ].map((spot, idx) => (
-              <div key={idx} className="bg-slate-900/80 p-3 rounded-xl border border-slate-800 space-y-1">
+              <Link
+                key={idx}
+                to={`/admin/issues/${spot.incidentId}`}
+                className="block bg-slate-900/80 hover:bg-slate-900 p-3 rounded-xl border border-slate-800 hover:border-indigo-500/40 transition-colors space-y-1 group"
+              >
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-200">📍 {spot.location}</span>
+                  <span className="font-semibold text-slate-200 group-hover:text-indigo-300">📍 {spot.location}</span>
                   <span className="font-mono text-cyan-400 font-bold">{spot.reports} reports → {spot.incidents} incident</span>
                 </div>
                 <p className="text-[11px] text-slate-400 flex items-center justify-between">
@@ -145,18 +149,23 @@ export default function AdminDashboard() {
                     {spot.severity}
                   </span>
                 </p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </div>
 
       {/* INCIDENT MANAGEMENT TABLE */}
-      <div className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+      <div id="work-orders" className="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-bold text-white">Actionable Incident Management Work Orders</h2>
-            <p className="text-xs text-slate-400">Manage work orders, assign department crews, and upload resolution evidence.</p>
+            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <Layers className="w-5 h-5 text-indigo-400" />
+              Physical Incident Work Orders (INC-xxxx)
+            </h2>
+            <p className="text-xs text-slate-400">
+              Each Incident Work Order aggregates redundant citizen complaints into 1 unified field dispatch.
+            </p>
           </div>
 
           {/* Department Filter */}
@@ -180,36 +189,55 @@ export default function AdminDashboard() {
           <table className="w-full text-left text-xs text-slate-300">
             <thead className="bg-slate-900/90 text-slate-400 font-mono uppercase text-[10px] border-b border-slate-800">
               <tr>
-                <th className="p-3">Report ID</th>
-                <th className="p-3">Incident ID</th>
+                <th className="p-3">Incident Work Order</th>
+                <th className="p-3">Report Cluster</th>
                 <th className="p-3">Category</th>
                 <th className="p-3">Location</th>
                 <th className="p-3">Severity</th>
                 <th className="p-3">Department</th>
-                <th className="p-3">Status</th>
+                <th className="p-3">Workflow Status</th>
                 <th className="p-3 text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
-              {filteredIssues.map(item => (
-                <tr key={item.issueId} className="hover:bg-slate-900/50 transition-colors">
-                  <td className="p-3 font-mono font-bold text-cyan-400">{item.issueId}</td>
-                  <td className="p-3 font-mono text-indigo-300 font-semibold">{item.incidentId}</td>
-                  <td className="p-3 font-semibold text-slate-200">{item.category}</td>
-                  <td className="p-3">📍 {item.locationLabel}</td>
-                  <td className="p-3"><SeverityBadge severity={item.severity} /></td>
-                  <td className="p-3"><span className="font-mono text-cyan-300">{item.department}</span></td>
-                  <td className="p-3"><StatusBadge status={item.status} /></td>
-                  <td className="p-3 text-right">
-                    <Link
-                      to={`/admin/issues/${item.issueId}`}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors shadow-sm"
-                    >
-                      Manage Work Order
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {Object.entries(incidentMap)
+                .map(([incId, repList]) => {
+                  const canonical = repList.find(r => !r.duplicateOf) || repList[0];
+                  const highestSev = repList.some(r => r.severity === 'CRITICAL')
+                    ? 'CRITICAL'
+                    : repList.some(r => r.severity === 'HIGH')
+                    ? 'HIGH'
+                    : repList.some(r => r.severity === 'MEDIUM')
+                    ? 'MEDIUM'
+                    : 'LOW';
+                  return { incId, repList, canonical, highestSev };
+                })
+                .filter(({ canonical }) => filterDepartment === 'ALL' || canonical.department === filterDepartment)
+                .map(({ incId, repList, canonical, highestSev }) => (
+                  <tr key={incId} className="hover:bg-slate-900/50 transition-colors">
+                    <td className="p-3 font-mono font-bold text-indigo-300">
+                      {incId}
+                    </td>
+                    <td className="p-3 font-mono text-cyan-300 font-semibold">
+                      <span className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/30 text-[11px]">
+                        {repList.length} {repList.length === 1 ? 'Report' : 'Reports'}
+                      </span>
+                    </td>
+                    <td className="p-3 font-semibold text-slate-200">{canonical.category}</td>
+                    <td className="p-3">📍 {canonical.locationLabel}</td>
+                    <td className="p-3"><SeverityBadge severity={highestSev} /></td>
+                    <td className="p-3"><span className="font-mono text-cyan-300">{canonical.department}</span></td>
+                    <td className="p-3"><StatusBadge status={canonical.status} /></td>
+                    <td className="p-3 text-right">
+                      <Link
+                        to={`/admin/issues/${incId}`}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition-colors shadow-sm"
+                      >
+                        Manage Incident
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

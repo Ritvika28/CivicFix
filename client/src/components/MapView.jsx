@@ -28,7 +28,7 @@ function createCustomIcon(severity) {
   });
 }
 
-export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom = 16, height = "400px" }) {
+export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom = 16, height = "400px", adminMode = false }) {
   return (
     <div style={{ height }} className="w-full rounded-2xl overflow-hidden border border-slate-800 shadow-xl relative group">
       <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
@@ -60,10 +60,12 @@ export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom
                     <SeverityBadge severity={issue.severity} />
                   </div>
                   <Link
-                    to={`/issues/${issue.issueId}`}
-                    className="block text-center w-full mt-2 py-1.5 px-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-semibold transition-colors shadow-sm"
+                    to={adminMode ? `/admin/issues/${issue.incidentId || issue.issueId}` : `/issues/${issue.issueId}`}
+                    className={`block text-center w-full mt-2 py-1.5 px-2 rounded-lg text-white text-xs font-semibold transition-colors shadow-sm ${
+                      adminMode ? 'bg-indigo-600 hover:bg-indigo-500' : 'bg-cyan-600 hover:bg-cyan-500'
+                    }`}
                   >
-                    View Incident Details
+                    {adminMode ? 'Manage Work Order' : 'View Incident Details'}
                   </Link>
                 </div>
               </Popup>

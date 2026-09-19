@@ -193,9 +193,56 @@ export default function AdminIssueDetails() {
               <Building2 className="w-4 h-4 text-indigo-400" /> Dispatch & Status Control
             </h2>
 
+            {/* Quick Status Workflow Action Buttons */}
+            <div className="space-y-2">
+              <label className="block text-xs font-mono text-slate-300 uppercase">Workflow Quick Actions</label>
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                <button
+                  type="button"
+                  onClick={() => setStatus('VERIFIED')}
+                  className={`py-1.5 px-2 rounded-lg border text-left flex items-center justify-between transition-colors ${
+                    status === 'VERIFIED' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 font-bold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
+                  }`}
+                >
+                  <span>1. Verify</span>
+                  {status === 'VERIFIED' && '✓'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStatus('ASSIGNED')}
+                  className={`py-1.5 px-2 rounded-lg border text-left flex items-center justify-between transition-colors ${
+                    status === 'ASSIGNED' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 font-bold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
+                  }`}
+                >
+                  <span>2. Assign</span>
+                  {status === 'ASSIGNED' && '✓'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStatus('IN_PROGRESS')}
+                  className={`py-1.5 px-2 rounded-lg border text-left flex items-center justify-between transition-colors ${
+                    status === 'IN_PROGRESS' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 font-bold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
+                  }`}
+                >
+                  <span>3. In Progress</span>
+                  {status === 'IN_PROGRESS' && '✓'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStatus('RESOLVED')}
+                  className={`py-1.5 px-2 rounded-lg border text-left flex items-center justify-between transition-colors ${
+                    status === 'RESOLVED' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-bold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
+                  }`}
+                >
+                  <span>4. Resolve</span>
+                  {status === 'RESOLVED' && '✓'}
+                </button>
+              </div>
+            </div>
+
             {/* Status Workflow Selector */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-mono text-slate-300 uppercase">Status Workflow</label>
+              <label className="block text-xs font-mono text-slate-300 uppercase">Status State Override</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}

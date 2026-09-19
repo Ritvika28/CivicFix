@@ -29,14 +29,17 @@ export const awsApi = {
     // Fallback: If direct /issues/{issueId} returns 404 (e.g. if issueId is an INC-xxxx incident ID or duplicate ID),
     // scan all issues from DynamoDB and locate the record by issueId or incidentId
     const allIssues = await this.getIssues();
-    const issue = allIssues.find(i => i.issueId === issueId || i.incidentId === issueId);
-    if (!issue) {
+    const matches = allIssues.filter(i => i.issueId === issueId || i.incidentId === issueId);
+    if (!matches || matches.length === 0) {
       throw new Error(`Issue or Incident ${issueId} not found`);
     }
 
-    const incidentReports = allIssues.filter(i => i.incidentId === issue.incidentId);
+    // Pick canonical/root issue (duplicateOf === null or first created)
+    const canonicalIssue = matches.find(i => !i.duplicateOf) || matches[0];
+    const incidentReports = allIssues.filter(i => i.incidentId === canonicalIssue.incidentId);
+
     return {
-      issue,
+      issue: canonicalIssue,
       incidentReports,
       incidentReportCount: incidentReports.length
     };
@@ -59,12 +62,21 @@ export const awsApi = {
    * Update issue in DynamoDB via Lambda
    */
   async updateIssue(issueId, updates) {
+    const payload = {
+      ...updates,
+      resolutionNote: updates.resolutionNote !== undefined ? updates.resolutionNote : '',
+      resolutionImageKey: updates.resolutionImageKey !== undefined ? updates.resolutionImageKey : null,
+      assignedTo: updates.assignedTo !== undefined ? updates.assignedTo : ''
+    };
     const res = await fetch(`${API_BASE_URL}/issues/${issueId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates)
+      body: JSON.stringify(payload)
     });
-    if (!res.ok) throw new Error(`API error: ${res.statusText}`);
+    if (!res.ok) {
+      const errJson = await res.json().catch(() => ({}));
+      throw new Error(errJson.error || `API error: ${res.statusText}`);
+    }
     return await res.json();
   },
 
