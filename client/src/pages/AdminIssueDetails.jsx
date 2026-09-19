@@ -120,8 +120,8 @@ export default function AdminIssueDetails() {
   const { issue, incidentReports, incidentReportCount } = data;
 
   return (
-    <div className="bg-civic-cream min-h-screen py-8 pb-16">
-      <div className="max-w-[1380px] mx-auto px-4 sm:px-5 lg:px-8 space-y-6" style={{ boxSizing: 'border-box' }}>
+    <div className="w-full flex-1 flex flex-col items-center justify-start bg-civic-cream py-8 pb-16 px-4 sm:px-5 lg:px-8" style={{ boxSizing: 'border-box' }}>
+      <div className="w-full max-w-[1380px] space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
           <Link to="/admin" className="inline-flex items-center gap-2 text-[13px] font-bold text-slate-500 hover:text-civic-primary transition-colors">

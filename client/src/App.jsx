@@ -57,12 +57,11 @@ function AuthorityRoute({ children }) {
 
 function AppShell() {
   const { pathname } = useLocation();
-  const isHome = pathname === '/';
 
   return (
-    <div className={`min-h-screen flex flex-col font-sans ${isHome ? 'bg-[#F7F6F1] text-civic-dark' : 'bg-slate-950 text-slate-100'}`} style={{ overflowX: 'hidden', width: '100%' }}>
+    <div className="min-h-screen flex flex-col font-sans bg-[#F7F6F1] text-civic-dark" style={{ overflowX: 'hidden', width: '100%' }}>
       <Navbar />
-      <main className="flex-1 w-full" style={{ boxSizing: 'border-box' }}>
+      <main className="flex-1 w-full flex flex-col" style={{ boxSizing: 'border-box' }}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />

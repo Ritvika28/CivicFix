@@ -154,17 +154,18 @@ export default function ReportIssue() {
   };
 
   return (
-    <div className="w-full max-w-[1380px] mx-auto py-6 px-4 sm:px-5 lg:px-8 space-y-6 min-h-screen bg-civic-cream" style={{ boxSizing: 'border-box' }}>
-      {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-[28px] font-bold text-civic-dark tracking-tight flex items-center gap-3">
-          <Layers className="w-7 h-7 text-civic-primary" />
-          Report a Civic Issue
-        </h1>
-        <p className="text-[14px] text-slate-600 font-medium">
-          Upload a photo, select location, and let CivicFix AI analyze, group, and route your report.
-        </p>
-      </div>
+    <div className="w-full flex-1 flex flex-col items-center justify-start bg-civic-cream py-6 px-4 sm:px-6 lg:px-8" style={{ boxSizing: 'border-box' }}>
+      <div className="w-full max-w-[1380px] space-y-6">
+        {/* Header */}
+        <div className="space-y-2">
+          <h1 className="text-[28px] font-bold text-civic-dark tracking-tight flex items-center gap-3">
+            <Layers className="w-7 h-7 text-civic-primary" />
+            Report a Civic Issue
+          </h1>
+          <p className="text-[14px] text-slate-600 font-medium">
+            Upload a photo, select location, and let CivicFix AI analyze, group, and route your report.
+          </p>
+        </div>
 
       {errorMsg && (
         <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm flex items-center gap-2 shadow-sm font-medium">
@@ -459,6 +460,7 @@ export default function ReportIssue() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
