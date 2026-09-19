@@ -67,30 +67,31 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-xl mx-auto py-10 px-4 space-y-8">
+    <div className="w-full min-h-screen bg-civic-cream py-8 px-4 sm:px-5 lg:px-8" style={{ boxSizing: 'border-box' }}>
+    <div className="max-w-xl mx-auto space-y-8">
       {/* Header */}
       <div className="text-center space-y-3">
-        <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto">
-          <Shield className="w-6 h-6" />
+        <div className="w-14 h-14 rounded-2xl bg-civic-50 border border-civic-200 text-civic-600 flex items-center justify-center mx-auto shadow-sm">
+          <Shield className="w-7 h-7" />
         </div>
-        <h1 className="text-3xl font-bold text-white">CivicFix Authentication Gate</h1>
-        <p className="text-sm text-slate-400">
+        <h1 className="text-3xl font-bold text-civic-900 tracking-tight">CivicFix Authentication Gate</h1>
+        <p className="text-sm text-slate-600 font-medium">
           Sign in or register to access the Citizen Reporting Portal or Authority Command Center.
         </p>
       </div>
 
       {/* Role Selector Tabs (Preserved role choices) */}
-      <div className="grid grid-cols-2 gap-3 p-1.5 rounded-2xl bg-slate-900/80 border border-slate-800">
+      <div className="grid grid-cols-2 gap-3 p-1.5 rounded-2xl bg-slate-50 border border-slate-200 shadow-inner">
         <button
           type="button"
           onClick={() => {
             setActiveRole('citizen');
             setAuthMode('login');
           }}
-          className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-bold transition-all ${
             activeRole === 'citizen'
-              ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              ? 'bg-white text-civic-700 shadow-sm border border-slate-200'
+              : 'text-slate-500 hover:text-civic-600 hover:bg-slate-100 border border-transparent'
           }`}
         >
           <UserCheck className="w-4 h-4" />
@@ -103,10 +104,10 @@ export default function Login() {
             setActiveRole('admin');
             setAuthMode('login');
           }}
-          className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-xs font-bold transition-all ${
+          className={`flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-sm font-bold transition-all ${
             activeRole === 'admin'
-              ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              ? 'bg-white text-civic-700 shadow-sm border border-slate-200'
+              : 'text-slate-500 hover:text-civic-600 hover:bg-slate-100 border border-transparent'
           }`}
         >
           <LayoutDashboard className="w-4 h-4" />
@@ -115,25 +116,23 @@ export default function Login() {
       </div>
 
       {/* Authentication Card */}
-      <div className={`p-8 rounded-3xl border glass-panel space-y-6 ${
-        activeRole === 'admin' ? 'border-indigo-500/30 shadow-indigo-500/5' : 'border-cyan-500/30 shadow-cyan-500/5'
-      }`}>
-        <div className="flex items-center justify-between">
+      <div className="p-8 rounded-3xl border bg-white shadow-sm border-slate-200 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <h2 className="text-xl font-bold text-civic-900 flex items-center gap-2">
               {activeRole === 'citizen' ? (
                 <>
-                  <UserCheck className="w-5 h-5 text-cyan-400" />
+                  <UserCheck className="w-5 h-5 text-civic-600" />
                   {authMode === 'login' ? 'Citizen Sign In' : 'Create Citizen Account'}
                 </>
               ) : (
                 <>
-                  <LayoutDashboard className="w-5 h-5 text-indigo-400" />
+                  <LayoutDashboard className="w-5 h-5 text-civic-600" />
                   Authority Officer Login
                 </>
               )}
             </h2>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 mt-1.5 font-medium">
               {activeRole === 'citizen'
                 ? (authMode === 'login' ? 'Access your reports and track active campus resolutions.' : 'Register a new citizen reporting account.')
                 : 'Authorized municipal response & field dispatch login.'}
@@ -142,12 +141,12 @@ export default function Login() {
 
           {/* Toggle Login/Signup for Citizen */}
           {activeRole === 'citizen' && (
-            <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-[11px] font-medium">
+            <div className="flex bg-slate-50 p-1.5 rounded-xl border border-slate-200 text-xs font-bold shadow-inner">
               <button
                 type="button"
                 onClick={() => setAuthMode('login')}
-                className={`px-3 py-1 rounded-lg transition-colors ${
-                  authMode === 'login' ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'text-slate-400 hover:text-slate-200'
+                className={`px-3.5 py-1.5 rounded-lg transition-all ${
+                  authMode === 'login' ? 'bg-white text-civic-700 border border-slate-200 shadow-sm' : 'text-slate-500 hover:text-civic-600 border border-transparent'
                 }`}
               >
                 Sign In
@@ -155,8 +154,8 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setAuthMode('signup')}
-                className={`px-3 py-1 rounded-lg transition-colors ${
-                  authMode === 'signup' ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'text-slate-400 hover:text-slate-200'
+                className={`px-3.5 py-1.5 rounded-lg transition-all ${
+                  authMode === 'signup' ? 'bg-white text-civic-700 border border-slate-200 shadow-sm' : 'text-slate-500 hover:text-civic-600 border border-transparent'
                 }`}
               >
                 Sign Up
@@ -166,26 +165,26 @@ export default function Login() {
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 text-rose-400" />
+          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium flex items-start gap-2 shadow-sm">
+            <AlertCircle className="w-5 h-5 shrink-0 text-red-500 mt-0.5" />
             <span>{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name Field (Citizen Signup only) */}
           {activeRole === 'citizen' && authMode === 'signup' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Full Name</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Full Name</label>
               <div className="relative">
-                <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                <User className="w-5 h-5 text-slate-400 absolute left-3.5 top-3" />
                 <input
                   type="text"
                   required
                   placeholder="e.g. Alex Johnson"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl bg-white border border-slate-300 text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-civic-500 focus:ring-1 focus:ring-civic-500 shadow-sm transition-shadow"
                 />
               </div>
             </div>
@@ -193,36 +192,32 @@ export default function Login() {
 
           {/* Email Field */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Email Address</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Email Address</label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+              <Mail className="w-5 h-5 text-slate-400 absolute left-3.5 top-3" />
               <input
                 type="email"
                 required
                 placeholder={activeRole === 'admin' ? 'officer.sharma@civicfix.gov' : 'alex@civicfix.org'}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-sm text-slate-100 placeholder-slate-500 focus:outline-none ${
-                  activeRole === 'admin' ? 'focus:border-indigo-500/50' : 'focus:border-cyan-500/50'
-                }`}
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-white border border-slate-300 text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-civic-500 focus:ring-1 focus:ring-civic-500 shadow-sm transition-shadow"
               />
             </div>
           </div>
 
           {/* Password Field */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1.5">Password</label>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Password</label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+              <Lock className="w-5 h-5 text-slate-400 absolute left-3.5 top-3" />
               <input
                 type="password"
                 required
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-sm text-slate-100 placeholder-slate-500 focus:outline-none ${
-                  activeRole === 'admin' ? 'focus:border-indigo-500/50' : 'focus:border-cyan-500/50'
-                }`}
+                className="w-full pl-11 pr-4 py-3 rounded-xl bg-white border border-slate-300 text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-civic-500 focus:ring-1 focus:ring-civic-500 shadow-sm transition-shadow"
               />
             </div>
           </div>
@@ -230,16 +225,16 @@ export default function Login() {
           {/* Confirm Password Field (Citizen Signup only) */}
           {activeRole === 'citizen' && authMode === 'signup' && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Confirm Password</label>
+              <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">Confirm Password</label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                <Lock className="w-5 h-5 text-slate-400 absolute left-3.5 top-3" />
                 <input
                   type="password"
                   required
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-800 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl bg-white border border-slate-300 text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-civic-500 focus:ring-1 focus:ring-civic-500 shadow-sm transition-shadow"
                 />
               </div>
             </div>
@@ -248,10 +243,10 @@ export default function Login() {
           {/* Submit Button */}
           <button
             type="submit"
-            className={`w-full py-3 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${
+            className={`w-full py-3.5 px-4 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-sm ${
               activeRole === 'admin'
-                ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-600/25'
-                : 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-cyan-500/25'
+                ? 'bg-civic-700 hover:bg-civic-800 text-white'
+                : 'bg-civic-600 hover:bg-civic-700 text-white'
             }`}
           >
             {activeRole === 'citizen' ? (
@@ -264,7 +259,7 @@ export default function Login() {
         </form>
 
         {/* Demo Helper Badge */}
-        <div className="pt-2 text-center text-xs text-slate-400 border-t border-slate-800/80">
+        <div className="pt-5 text-center text-sm font-medium text-slate-500 border-t border-slate-200">
           {activeRole === 'citizen' ? (
             authMode === 'login' ? (
               <p>
@@ -272,7 +267,7 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setAuthMode('signup')}
-                  className="text-cyan-400 font-semibold underline hover:text-cyan-300 ml-1"
+                  className="text-civic-600 font-bold hover:underline ml-1"
                 >
                   Sign Up
                 </button>
@@ -283,19 +278,20 @@ export default function Login() {
                 <button
                   type="button"
                   onClick={() => setAuthMode('login')}
-                  className="text-cyan-400 font-semibold underline hover:text-cyan-300 ml-1"
+                  className="text-civic-600 font-bold hover:underline ml-1"
                 >
                   Sign In
                 </button>
               </p>
             )
           ) : (
-            <p className="text-slate-400 font-mono text-[11px]">
+            <p className="text-slate-500 font-mono text-[11px] font-bold uppercase tracking-wider">
               Protected Authority Login • Public signups restricted
             </p>
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

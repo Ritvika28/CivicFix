@@ -1,20 +1,20 @@
 import React from 'react';
 
 const STATUS_CONFIG = {
-  REPORTED: { label: 'Reported', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30' },
-  VERIFIED: { label: 'Verified', color: 'bg-blue-500/10 text-blue-400 border-blue-500/30' },
-  ASSIGNED: { label: 'Assigned', color: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30' },
-  IN_PROGRESS: { label: 'In Progress', color: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30 font-medium animate-pulse' },
-  RESOLVED: { label: 'Resolved', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 font-semibold' },
-  NEEDS_VERIFICATION: { label: 'Needs Verification', color: 'bg-rose-500/10 text-rose-400 border-rose-500/30' }
+  REPORTED: { label: 'Reported', color: 'bg-slate-100 text-slate-600 border-slate-200 font-bold uppercase tracking-widest' },
+  VERIFIED: { label: 'Verified', color: 'bg-blue-50 text-blue-700 border-blue-200 font-bold uppercase tracking-widest' },
+  ASSIGNED: { label: 'Assigned', color: 'bg-indigo-50 text-indigo-700 border-indigo-200 font-bold uppercase tracking-widest' },
+  IN_PROGRESS: { label: 'In Progress', color: 'bg-orange-50 text-orange-700 border-orange-200 font-bold uppercase tracking-widest' },
+  RESOLVED: { label: 'Resolved', color: 'bg-civic-primary text-white border-civic-primary font-bold uppercase tracking-widest shadow-sm shadow-civic-primary/30' },
+  NEEDS_VERIFICATION: { label: 'Needs Verification', color: 'bg-red-50 text-red-700 border-red-200 font-bold uppercase tracking-widest' }
 };
 
 export default function StatusBadge({ status }) {
-  const config = STATUS_CONFIG[status] || { label: status, color: 'bg-slate-700 text-slate-300 border-slate-600' };
+  const config = STATUS_CONFIG[status] || { label: status, color: 'bg-slate-100 text-slate-700 border-slate-200' };
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs border ${config.color}`}>
-      <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] border ${config.color}`}>
+      <span className={`w-1.5 h-1.5 rounded-full ${status === 'RESOLVED' ? 'bg-white' : 'bg-current'}`}></span>
       {config.label}
     </span>
   );

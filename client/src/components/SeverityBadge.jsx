@@ -2,10 +2,10 @@ import React from 'react';
 import { AlertTriangle, AlertCircle, ShieldAlert, Info } from 'lucide-react';
 
 const SEVERITY_CONFIG = {
-  LOW: { label: 'Low', color: 'bg-slate-800 text-slate-300 border-slate-700', icon: Info },
-  MEDIUM: { label: 'Medium', color: 'bg-amber-500/10 text-amber-300 border-amber-500/30', icon: AlertCircle },
-  HIGH: { label: 'High', color: 'bg-orange-500/10 text-orange-300 border-orange-500/30', icon: AlertTriangle },
-  CRITICAL: { label: 'CRITICAL HAZARD', color: 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold tracking-wide animate-pulse', icon: ShieldAlert }
+  LOW: { label: 'Low', color: 'bg-slate-50 text-slate-600 border-slate-200 font-bold uppercase tracking-widest', icon: Info },
+  MEDIUM: { label: 'Medium', color: 'bg-amber-50 text-amber-700 border-amber-200 font-bold uppercase tracking-widest', icon: AlertCircle },
+  HIGH: { label: 'High', color: 'bg-orange-50 text-orange-700 border-orange-200 font-bold uppercase tracking-widest', icon: AlertTriangle },
+  CRITICAL: { label: 'CRITICAL', color: 'bg-red-600 text-white border-red-600 font-bold uppercase tracking-widest animate-pulse shadow-sm shadow-red-600/30', icon: ShieldAlert }
 };
 
 export default function SeverityBadge({ severity }) {
@@ -13,8 +13,8 @@ export default function SeverityBadge({ severity }) {
   const Icon = config.icon;
 
   return (
-    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs border ${config.color}`}>
-      <Icon className="w-3.5 h-3.5 shrink-0" />
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[10px] border ${config.color}`}>
+      <Icon className="w-3 h-3 shrink-0" />
       {config.label}
     </span>
   );

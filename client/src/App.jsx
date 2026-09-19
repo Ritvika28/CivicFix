@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -55,25 +55,34 @@ function AuthorityRoute({ children }) {
   return children;
 }
 
+function AppShell() {
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
+
+  return (
+    <div className={`min-h-screen flex flex-col font-sans ${isHome ? 'bg-[#F7F6F1] text-civic-dark' : 'bg-slate-950 text-slate-100'}`} style={{ overflowX: 'hidden', width: '100%' }}>
+      <Navbar />
+      <main className="flex-1 w-full" style={{ boxSizing: 'border-box' }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/citizen" element={<ProtectedRoute><CitizenDashboard /></ProtectedRoute>} />
+          <Route path="/report" element={<ProtectedRoute><ReportIssue /></ProtectedRoute>} />
+          <Route path="/issues/:id" element={<IssueDetails />} />
+          <Route path="/admin" element={<AuthorityRoute><AdminDashboard /></AuthorityRoute>} />
+          <Route path="/admin/issues/:id" element={<AuthorityRoute><AdminIssueDetails /></AuthorityRoute>} />
+        </Routes>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen flex flex-col bg-slate-950 text-slate-100 font-sans">
-          <Navbar />
-          <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/citizen" element={<ProtectedRoute><CitizenDashboard /></ProtectedRoute>} />
-              <Route path="/report" element={<ProtectedRoute><ReportIssue /></ProtectedRoute>} />
-              <Route path="/issues/:id" element={<IssueDetails />} />
-              <Route path="/admin" element={<AuthorityRoute><AdminDashboard /></AuthorityRoute>} />
-              <Route path="/admin/issues/:id" element={<AuthorityRoute><AdminIssueDetails /></AuthorityRoute>} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AppShell />
       </Router>
     </AuthProvider>
   );

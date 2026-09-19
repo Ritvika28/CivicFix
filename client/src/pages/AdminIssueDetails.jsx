@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, LayoutDashboard, Upload, CheckCircle2, AlertTriangle, Layers, UserCheck, Sparkles, Building2 } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard, Upload, CheckCircle2, AlertTriangle, Layers, UserCheck, Sparkles, Building2, MapPin } from 'lucide-react';
 import { api } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
@@ -100,17 +100,19 @@ export default function AdminIssueDetails() {
   };
 
   if (loading) {
-    return <div className="text-center py-16 text-xs text-slate-400 font-mono">Loading incident management panel...</div>;
+    return <div className="text-center py-20 text-sm text-slate-500 font-bold bg-civic-cream min-h-screen">Loading incident management panel...</div>;
   }
 
   if (error || !data) {
     return (
-      <div className="max-w-md mx-auto my-12 p-8 glass-card rounded-2xl text-center space-y-4">
-        <AlertTriangle className="w-10 h-10 text-rose-400 mx-auto" />
-        <h2 className="text-lg font-bold text-white">Incident Not Found</h2>
-        <Link to="/admin" className="inline-block py-2.5 px-4 rounded-xl bg-slate-800 text-xs text-slate-200">
-          Back to Admin Command Center
-        </Link>
+      <div className="bg-civic-cream min-h-screen py-12">
+        <div className="max-w-md mx-auto p-8 bg-white border border-slate-200 shadow-sm rounded-2xl text-center space-y-5">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto" />
+          <h2 className="text-xl font-bold text-civic-dark">Incident Not Found</h2>
+          <Link to="/admin" className="inline-block py-3 px-6 rounded-xl bg-white border border-slate-200 shadow-sm text-[13px] font-bold text-civic-dark hover:bg-slate-50 transition-colors">
+            Back to Admin Command Center
+          </Link>
+        </div>
       </div>
     );
   }
@@ -118,210 +120,221 @@ export default function AdminIssueDetails() {
   const { issue, incidentReports, incidentReportCount } = data;
 
   return (
-    <div className="max-w-4xl mx-auto py-6 space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <Link to="/admin" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to Admin Command Center
-        </Link>
-        <span className="font-mono text-xs text-indigo-400 font-bold">Work Order Incident #{issue.incidentId}</span>
-      </div>
-
-      {successMsg && (
-        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          {successMsg}
+    <div className="bg-civic-cream min-h-screen py-8 pb-16">
+      <div className="max-w-[1380px] mx-auto px-4 sm:px-5 lg:px-8 space-y-6" style={{ boxSizing: 'border-box' }}>
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+          <Link to="/admin" className="inline-flex items-center gap-2 text-[13px] font-bold text-slate-500 hover:text-civic-primary transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back to Admin Command Center
+          </Link>
+          <span className="text-[12px] text-civic-dark font-bold uppercase tracking-widest bg-slate-50 px-3 py-1 rounded border border-slate-100">
+            Work Order Incident #{issue.incidentId}
+          </span>
         </div>
-      )}
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Report & Incident Info */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="glass-card p-6 rounded-2xl border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div>
-                <span className="font-mono text-xs text-cyan-400 font-bold">Report #{issue.issueId}</span>
-                <h1 className="text-xl font-bold text-white mt-0.5">{issue.description}</h1>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                <StatusBadge status={issue.status} />
-                <SeverityBadge severity={issue.severity} />
-              </div>
-            </div>
+        {successMsg && (
+          <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-green-800 text-[13px] font-bold flex items-center gap-3 shadow-sm">
+            <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+            {successMsg}
+          </div>
+        )}
 
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-                <span className="text-[10px] text-slate-400 font-mono uppercase block">Location</span>
-                <span className="font-semibold text-slate-200">📍 {issue.locationLabel}</span>
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column: Report & Incident Info */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 border-b border-slate-100 pb-6">
+                <div className="space-y-4">
+                  <span className="text-[10px] text-civic-primary font-bold uppercase tracking-widest bg-civic-50 px-2.5 py-1 rounded border border-civic-100">
+                    Canonical Report #{issue.issueId}
+                  </span>
+                  <h1 className="text-[24px] font-bold text-civic-dark leading-tight">{issue.description}</h1>
+                </div>
+                <div className="flex flex-row sm:flex-col items-center sm:items-end gap-3 shrink-0">
+                  <StatusBadge status={issue.status} />
+                  <SeverityBadge severity={issue.severity} />
+                </div>
               </div>
-              <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-                <span className="text-[10px] text-slate-400 font-mono uppercase block">Submitted By</span>
-                <span className="font-semibold text-slate-200">{issue.reportedBy}</span>
-              </div>
-            </div>
 
-            <div className="space-y-2">
-              <span className="text-xs font-mono text-slate-400 uppercase font-semibold block">Citizen Submitted Photo</span>
-              <S3Image src={issue.imageKey} alt="Citizen report photo" className="w-full h-56 object-cover rounded-xl border border-slate-800" />
-            </div>
-
-            {/* Linked Reports under same incident */}
-            <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-mono font-bold text-cyan-400 flex items-center gap-1.5">
-                  <Layers className="w-4 h-4" /> Incident #{issue.incidentId} Report Cluster
-                </span>
-                <span className="font-mono text-slate-300">
-                  {incidentReportCount} citizen reports → 1 physical work order
-                </span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-slate-50/80 p-5 rounded-xl border border-slate-200 shadow-sm">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest block mb-2">Location</span>
+                  <span className="font-bold text-civic-dark text-[14px] flex items-center gap-1.5"><MapPin className="w-4 h-4 text-slate-400"/> {issue.locationLabel}</span>
+                </div>
+                <div className="bg-slate-50/80 p-5 rounded-xl border border-slate-200 shadow-sm">
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest block mb-2">Submitted By</span>
+                  <span className="font-bold text-civic-dark text-[14px] flex items-center gap-1.5"><UserCheck className="w-4 h-4 text-slate-400"/> {issue.reportedBy}</span>
+                </div>
               </div>
-              <div className="space-y-2">
-                {incidentReports.map(rep => (
-                  <div key={rep.issueId} className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs flex items-center justify-between">
-                    <div>
-                      <span className="font-mono text-cyan-400 font-semibold">{rep.issueId}</span>: {rep.description}
+
+              <div className="space-y-3 pt-2">
+                <span className="text-[11px] text-slate-500 uppercase font-bold tracking-widest block">Citizen Submitted Photo</span>
+                <S3Image src={issue.imageKey} alt="Citizen report photo" className="w-full h-72 object-cover rounded-xl border border-slate-200 shadow-sm" />
+              </div>
+
+              {/* Linked Reports under same incident */}
+              <div className="bg-[#f8faf9] p-6 rounded-2xl border border-slate-200 space-y-5 shadow-sm mt-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-3">
+                  <span className="text-[13px] font-bold text-civic-dark flex items-center gap-2 uppercase tracking-wide">
+                    <Layers className="w-5 h-5 text-civic-primary" /> Incident #{issue.incidentId} Cluster
+                  </span>
+                  <span className="text-[10px] font-bold text-civic-primary bg-white px-2.5 py-1 rounded shadow-sm border border-slate-200 uppercase tracking-widest">
+                    {incidentReportCount} citizen reports → 1 physical work order
+                  </span>
+                </div>
+                <div className="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                  {incidentReports.map(rep => (
+                    <div key={rep.issueId} className="bg-white p-4 rounded-xl border border-slate-200 text-xs flex flex-col gap-2 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[12px] text-civic-dark font-bold uppercase tracking-wider">{rep.issueId}</span>
+                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">{rep.reportedBy}</span>
+                      </div>
+                      <span className="text-[13px] text-slate-600 font-medium leading-relaxed">{rep.description}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 font-mono">{rep.reportedBy}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right Column: Authority Management Form */}
-        <div className="space-y-6">
-          <form onSubmit={handleUpdateIncident} className="glass-card p-6 rounded-2xl border border-indigo-500/30 space-y-5">
-            <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-              <Building2 className="w-4 h-4 text-indigo-400" /> Dispatch & Status Control
-            </h2>
+          {/* Right Column: Authority Management Form */}
+          <div className="space-y-6">
+            <form onSubmit={handleUpdateIncident} className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-7 sticky top-6">
+              <h2 className="text-[16px] font-bold text-civic-dark flex items-center gap-2 border-b border-slate-100 pb-4">
+                <Building2 className="w-5 h-5 text-civic-primary" /> Dispatch & Status Control
+              </h2>
 
-            {/* Quick Status Workflow Action Buttons */}
-            <div className="space-y-2">
-              <label className="block text-xs font-mono text-slate-300 uppercase">Workflow Quick Actions</label>
-              <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-                <button
-                  type="button"
-                  onClick={() => setStatus('VERIFIED')}
-                  className={`py-1.5 px-2 rounded-lg border text-left flex items-center justify-between transition-colors ${
-                    status === 'VERIFIED' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 font-bold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
-                  }`}
-                >
-                  <span>1. Verify</span>
-                  {status === 'VERIFIED' && '✓'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStatus('ASSIGNED')}
-                  className={`py-1.5 px-2 rounded-lg border text-left flex items-center justify-between transition-colors ${
-                    status === 'ASSIGNED' ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 font-bold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
-                  }`}
-                >
-                  <span>2. Assign</span>
-                  {status === 'ASSIGNED' && '✓'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStatus('IN_PROGRESS')}
-                  className={`py-1.5 px-2 rounded-lg border text-left flex items-center justify-between transition-colors ${
-                    status === 'IN_PROGRESS' ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 font-bold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
-                  }`}
-                >
-                  <span>3. In Progress</span>
-                  {status === 'IN_PROGRESS' && '✓'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStatus('RESOLVED')}
-                  className={`py-1.5 px-2 rounded-lg border text-left flex items-center justify-between transition-colors ${
-                    status === 'RESOLVED' ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 font-bold' : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-slate-200'
-                  }`}
-                >
-                  <span>4. Resolve</span>
-                  {status === 'RESOLVED' && '✓'}
-                </button>
+              {/* Quick Status Workflow Action Buttons */}
+              <div className="space-y-2.5">
+                <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Workflow Quick Actions</label>
+                <div className="grid grid-cols-2 gap-3 text-[11px] font-bold uppercase tracking-wider">
+                  <button
+                    type="button"
+                    onClick={() => setStatus('VERIFIED')}
+                    className={`py-3 px-3 rounded-xl border text-left flex items-center justify-between transition-colors shadow-sm ${
+                      status === 'VERIFIED' ? 'bg-civic-dark text-white border-civic-dark' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>1. Verify</span>
+                    {status === 'VERIFIED' && <CheckCircle2 className="w-4 h-4"/>}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStatus('ASSIGNED')}
+                    className={`py-3 px-3 rounded-xl border text-left flex items-center justify-between transition-colors shadow-sm ${
+                      status === 'ASSIGNED' ? 'bg-civic-dark text-white border-civic-dark' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>2. Assign</span>
+                    {status === 'ASSIGNED' && <CheckCircle2 className="w-4 h-4"/>}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStatus('IN_PROGRESS')}
+                    className={`py-3 px-3 rounded-xl border text-left flex items-center justify-between transition-colors shadow-sm ${
+                      status === 'IN_PROGRESS' ? 'bg-civic-dark text-white border-civic-dark' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>3. In Progress</span>
+                    {status === 'IN_PROGRESS' && <CheckCircle2 className="w-4 h-4"/>}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStatus('RESOLVED')}
+                    className={`py-3 px-3 rounded-xl border text-left flex items-center justify-between transition-colors shadow-sm ${
+                      status === 'RESOLVED' ? 'bg-green-600 text-white border-green-600' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    <span>4. Resolve</span>
+                    {status === 'RESOLVED' && <CheckCircle2 className="w-4 h-4"/>}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Status Workflow Selector */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono text-slate-300 uppercase">Status State Override</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
-              >
-                <option value="REPORTED">REPORTED</option>
-                <option value="VERIFIED">VERIFIED</option>
-                <option value="ASSIGNED">ASSIGNED</option>
-                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                <option value="RESOLVED">RESOLVED</option>
-              </select>
-            </div>
-
-            {/* Department Selector */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono text-slate-300 uppercase">Assigned Department</label>
-              <select
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
-              >
-                <option value="ELECTRICAL">ELECTRICAL</option>
-                <option value="SANITATION">SANITATION</option>
-                <option value="PUBLIC_WORKS">PUBLIC_WORKS</option>
-                <option value="WATER_SERVICES">WATER_SERVICES</option>
-                <option value="DRAINAGE">DRAINAGE</option>
-              </select>
-            </div>
-
-            {/* Assigned Team Input */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono text-slate-300 uppercase">Field Response Crew</label>
-              <input
-                type="text"
-                value={assignedTo}
-                onChange={(e) => setAssignedTo(e.target.value)}
-                placeholder="e.g. Electrical Crew Alpha"
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-
-            {/* Resolution After Photo Upload */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono text-slate-300 uppercase">Resolution "After" Photo Proof</label>
-              <div className="border border-dashed border-slate-800 rounded-xl p-3 text-center cursor-pointer bg-slate-900/60 relative">
-                <input type="file" accept="image/*" onChange={handleAfterImageSelect} className="absolute inset-0 opacity-0 cursor-pointer" />
-                {afterImagePreview ? (
-                  <img src={afterImagePreview} alt="After proof" className="max-h-32 mx-auto rounded-lg object-cover" />
-                ) : (
-                  <div className="py-2 text-xs text-slate-400 flex items-center justify-center gap-1.5">
-                    <Upload className="w-4 h-4 text-indigo-400" /> Upload After Photo
-                  </div>
-                )}
+              {/* Status Workflow Selector */}
+              <div className="space-y-2.5">
+                <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Status State Override</label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-[13px] font-bold text-civic-dark focus:outline-none focus:border-civic-primary focus:ring-1 focus:ring-civic-primary shadow-sm appearance-none"
+                >
+                  <option value="REPORTED">REPORTED</option>
+                  <option value="VERIFIED">VERIFIED</option>
+                  <option value="ASSIGNED">ASSIGNED</option>
+                  <option value="IN_PROGRESS">IN_PROGRESS</option>
+                  <option value="RESOLVED">RESOLVED</option>
+                </select>
               </div>
-            </div>
 
-            {/* Resolution Notes */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-mono text-slate-300 uppercase">Resolution Notes</label>
-              <textarea
-                rows={2}
-                value={resolutionNote}
-                onChange={(e) => setResolutionNote(e.target.value)}
-                placeholder="Describe resolution work performed..."
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
-              />
-            </div>
+              {/* Department Selector */}
+              <div className="space-y-2.5">
+                <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Assigned Department</label>
+                <select
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-[13px] font-bold text-civic-dark focus:outline-none focus:border-civic-primary focus:ring-1 focus:ring-civic-primary shadow-sm appearance-none"
+                >
+                  <option value="ELECTRICAL">ELECTRICAL</option>
+                  <option value="SANITATION">SANITATION</option>
+                  <option value="PUBLIC_WORKS">PUBLIC_WORKS</option>
+                  <option value="WATER_SERVICES">WATER_SERVICES</option>
+                  <option value="DRAINAGE">DRAINAGE</option>
+                </select>
+              </div>
 
-            <button
-              type="submit"
-              className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-500/20 transition-all"
-            >
-              Update & Propagate to {incidentReportCount} Reports
-            </button>
-          </form>
+              {/* Assigned Team Input */}
+              <div className="space-y-2.5">
+                <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Field Response Crew</label>
+                <input
+                  type="text"
+                  value={assignedTo}
+                  onChange={(e) => setAssignedTo(e.target.value)}
+                  placeholder="e.g. Electrical Crew Alpha"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-[13px] font-bold text-civic-dark focus:outline-none focus:border-civic-primary focus:ring-1 focus:ring-civic-primary shadow-sm placeholder:text-slate-300 placeholder:font-medium"
+                />
+              </div>
+
+              {/* Resolution After Photo Upload */}
+              <div className="space-y-2.5">
+                <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Resolution "After" Photo Proof</label>
+                <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center cursor-pointer bg-slate-50/50 hover:border-civic-primary/40 hover:bg-slate-50 transition-colors relative">
+                  <input type="file" accept="image/*" onChange={handleAfterImageSelect} className="absolute inset-0 opacity-0 cursor-pointer" />
+                  {afterImagePreview ? (
+                    <img src={afterImagePreview} alt="After proof" className="max-h-36 mx-auto rounded-lg object-cover shadow-sm border border-slate-200" />
+                  ) : (
+                    <div className="py-4 text-[13px] font-bold text-slate-500 flex flex-col items-center justify-center gap-3">
+                      <div className="w-12 h-12 bg-white rounded-full shadow-sm border border-slate-100 flex items-center justify-center">
+                        <Upload className="w-5 h-5 text-civic-primary" />
+                      </div>
+                      <span>Click to upload after photo</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Resolution Notes */}
+              <div className="space-y-2.5">
+                <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Resolution Notes</label>
+                <textarea
+                  rows={4}
+                  value={resolutionNote}
+                  onChange={(e) => setResolutionNote(e.target.value)}
+                  placeholder="Describe resolution work performed..."
+                  className="w-full bg-white border border-slate-200 rounded-xl p-4 text-[13px] font-medium text-civic-dark focus:outline-none focus:border-civic-primary focus:ring-1 focus:ring-civic-primary shadow-sm placeholder:text-slate-400 resize-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-4 px-4 rounded-xl bg-civic-primary hover:bg-civic-secondary text-white font-bold text-[13px] shadow-sm transition-colors flex justify-center items-center gap-2 uppercase tracking-wide mt-2"
+              >
+                <CheckCircle2 className="w-5 h-5" />
+                Update & Propagate
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>

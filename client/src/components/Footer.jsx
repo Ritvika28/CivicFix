@@ -1,21 +1,33 @@
 import React from 'react';
-import { Shield, ExternalLink } from 'lucide-react';
+import { Leaf } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-slate-800/80 bg-slate-950 py-8 mt-12 text-slate-400 text-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <Shield className="w-4 h-4 text-cyan-400" />
-          <span className="font-semibold text-slate-200">CivicFix</span>
-          <span className="text-slate-500">— "From citizen report to resolved incident."</span>
+    <footer className="border-t border-slate-200 bg-white py-12 mt-16 text-slate-500 text-xs">
+      <div className="max-w-[1380px] mx-auto px-4 sm:px-5 lg:px-8">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
+          <div className="flex items-center gap-2">
+            <Leaf className="w-5 h-5 text-civic-600" />
+            <span className="font-bold text-base text-civic-900">CivicFix</span>
+            <span className="text-slate-500 text-sm hidden sm:inline ml-2 border-l border-slate-300 pl-4">Cleaner Cities. Stronger Communities.</span>
+          </div>
+
+          <div className="flex items-center gap-6 text-sm font-medium text-slate-600">
+            <a href="#" className="hover:text-civic-600 transition-colors">About</a>
+            <a href="#" className="hover:text-civic-600 transition-colors">Privacy</a>
+            <a href="#" className="hover:text-civic-600 transition-colors">Terms</a>
+            <a href="#" className="hover:text-civic-600 transition-colors">Contact</a>
+          </div>
         </div>
 
-        <div className="flex items-center gap-6 text-slate-400">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] text-cyan-400 font-mono">
-            ⚡ AWS Serverless Architecture
-          </span>
-          <span className="text-slate-500">Region: ap-south-1</span>
+        <div className="flex flex-col md:flex-row items-center justify-between pt-8 border-t border-slate-100 gap-4">
+          <p>&copy; {new Date().getFullYear()} CivicFix Municipal Technologies. All rights reserved.</p>
+          <div className="flex items-center gap-4">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-50 border border-slate-200 text-[11px] text-civic-600 font-mono font-medium">
+              ⚡ AWS Serverless Architecture
+            </span>
+            <span className="text-slate-400 font-mono text-[11px]">Region: ap-south-1</span>
+          </div>
         </div>
       </div>
     </footer>

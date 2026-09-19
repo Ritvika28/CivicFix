@@ -49,18 +49,20 @@ export default function IssueDetails() {
   };
 
   if (loading) {
-    return <div className="text-center py-16 text-xs text-slate-400 font-mono">Loading issue timeline...</div>;
+    return <div className="text-center py-20 text-sm text-slate-500 font-bold bg-civic-cream min-h-screen">Loading issue timeline...</div>;
   }
 
   if (error || !data) {
     return (
-      <div className="max-w-md mx-auto my-12 p-8 glass-card rounded-2xl text-center space-y-4">
-        <AlertTriangle className="w-10 h-10 text-rose-400 mx-auto" />
-        <h2 className="text-lg font-bold text-white">Issue Not Found</h2>
-        <p className="text-xs text-slate-400">{error || 'Could not locate issue details.'}</p>
-        <Link to="/citizen" className="inline-block py-2.5 px-4 rounded-xl bg-slate-800 text-xs text-slate-200">
-          Back to My Reports
-        </Link>
+      <div className="bg-civic-cream min-h-screen py-12">
+        <div className="max-w-md mx-auto p-8 bg-white border border-slate-200 shadow-sm rounded-2xl text-center space-y-5">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto" />
+          <h2 className="text-xl font-bold text-civic-dark">Issue Not Found</h2>
+          <p className="text-[14px] text-slate-600 font-medium">{error || 'Could not locate issue details.'}</p>
+          <Link to="/citizen" className="inline-block py-3 px-6 rounded-xl bg-white border border-slate-200 shadow-sm text-[13px] font-bold text-civic-dark hover:bg-slate-50 transition-colors">
+            Back to My Reports
+          </Link>
+        </div>
       </div>
     );
   }
@@ -83,170 +85,194 @@ export default function IssueDetails() {
   const currentStepIdx = getStepIndex(issue.status);
 
   return (
-    <div className="max-w-4xl mx-auto py-6 space-y-8">
-      {/* Top Bar */}
-      <div className="flex items-center justify-between">
-        <Link to="/citizen" className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back to My Reports
-        </Link>
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-xs text-cyan-400 font-bold">Ticket #{issue.issueId}</span>
-          <span className="text-slate-600">|</span>
-          <span className="font-mono text-xs text-indigo-300 font-semibold">Incident #{issue.incidentId}</span>
-        </div>
-      </div>
-
-      {userFeedbackMsg && (
-        <div className="p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
-          {userFeedbackMsg}
-        </div>
-      )}
-
-      {/* Main Card */}
-      <div className="glass-card p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <StatusBadge status={issue.status} />
-              <SeverityBadge severity={issue.severity} />
-            </div>
-            <h1 className="text-2xl font-bold text-white">{issue.description}</h1>
-            <p className="text-xs text-slate-400 mt-1 flex items-center gap-2">
-              <span>📍 {issue.locationLabel}</span>
-              <span>•</span>
-              <span>Reported {issue.reportedAt || issue.createdAt ? new Date(issue.reportedAt || issue.createdAt).toLocaleString() : 'Just now'}</span>
-            </p>
-          </div>
-
-          <div className="bg-slate-900/90 p-3.5 rounded-xl border border-cyan-500/30 text-right space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-mono block">Incident Clustering</span>
-            <span className="font-mono text-xs font-bold text-cyan-300 flex items-center gap-1 justify-end">
-              <Layers className="w-3.5 h-3.5 text-cyan-400" />
-              {incidentReportCount} {incidentReportCount === 1 ? 'Report' : 'Reports'} → 1 Incident Work Order
-            </span>
+    <div className="bg-civic-cream min-h-screen py-8 pb-16">
+      <div className="max-w-[1380px] mx-auto px-4 sm:px-5 lg:px-8 space-y-6" style={{ boxSizing: 'border-box' }}>
+        
+        {/* Top Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+          <Link to="/citizen" className="inline-flex items-center gap-2 text-[13px] font-bold text-slate-500 hover:text-civic-primary transition-colors">
+            <ArrowLeft className="w-4 h-4" /> Back to My Reports
+          </Link>
+          <div className="flex items-center gap-3">
+            <span className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">Ticket #{issue.issueId}</span>
+            <span className="text-slate-200">|</span>
+            <span className="text-[11px] text-civic-primary font-bold uppercase tracking-widest">Incident #{issue.incidentId}</span>
           </div>
         </div>
 
-        {/* TIMELINE VISUALIZATION */}
-        <div className="bg-slate-900/60 p-6 rounded-2xl border border-slate-800 space-y-3">
-          <span className="text-xs font-mono text-slate-400 uppercase font-semibold block">Resolution Progress Timeline</span>
-          <div className="grid grid-cols-5 gap-2 relative">
-            {TIMELINE_STEPS.map((step, idx) => {
-              const isPassed = idx <= currentStepIdx;
-              const isCurrent = idx === currentStepIdx;
-
-              return (
-                <div key={step.key} className="text-center space-y-2">
-                  <div className={`w-8 h-8 rounded-full mx-auto flex items-center justify-center text-xs font-bold font-mono transition-all ${
-                    isCurrent
-                      ? 'bg-cyan-500 text-slate-950 ring-4 ring-cyan-500/20 shadow-lg shadow-cyan-500/30'
-                      : isPassed
-                      ? 'bg-slate-800 text-cyan-400 border border-cyan-500/30'
-                      : 'bg-slate-950 text-slate-600 border border-slate-800'
-                  }`}>
-                    {isPassed ? '✓' : idx + 1}
-                  </div>
-                  <span className={`text-[11px] block font-medium ${isPassed ? 'text-slate-200' : 'text-slate-500'}`}>
-                    {step.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* BEFORE & AFTER RESOLUTION PHOTO DISPLAY */}
-        {issue.status === 'RESOLVED' && (
-          <div className="bg-emerald-500/10 border border-emerald-500/30 p-6 rounded-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-emerald-300 uppercase flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Resolution Proof Complete
-              </span>
-              <span className="text-[11px] text-slate-400 font-mono">Resolved at: {new Date(issue.resolvedAt).toLocaleDateString()}</span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-slate-400 block font-mono">BEFORE (Citizen Report Photo)</span>
-                <S3Image src={issue.imageKey} alt="Before report photo" className="w-full h-48 object-cover rounded-xl border border-slate-800" />
-              </div>
-              <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-emerald-400 block font-mono">AFTER (Authority Proof Photo)</span>
-                <S3Image
-                  src={issue.resolutionImageKey}
-                  alt="After resolution photo"
-                  className="w-full h-48 object-cover rounded-xl border border-emerald-500/30"
-                />
-              </div>
-            </div>
-
-            {issue.resolutionNote && (
-              <p className="text-xs text-slate-300 bg-slate-950/80 p-3.5 rounded-xl border border-slate-800 italic">
-                Authority Resolution Note: "{issue.resolutionNote}"
-              </p>
-            )}
-
-            {/* CITIZEN VERIFICATION PROMPT */}
-            {!issue.verificationStatus ? (
-              <div className="bg-slate-900/90 p-4 rounded-xl border border-slate-800 space-y-3">
-                <span className="text-xs font-semibold text-slate-200 block">Citizen Verification Check: Is this issue actually fixed?</span>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => handleCitizenVerification(true)}
-                    className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-md"
-                  >
-                    <CheckCircle2 className="w-4 h-4" /> YES, IT'S RESOLVED
-                  </button>
-                  <button
-                    onClick={() => handleCitizenVerification(false)}
-                    className="flex-1 py-2.5 px-3 rounded-xl bg-rose-600/80 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
-                  >
-                    <XCircle className="w-4 h-4" /> NO, STILL UNRESOLVED
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="p-3 bg-slate-950 rounded-xl text-xs font-mono text-cyan-300 flex items-center gap-2 border border-cyan-500/20">
-                <UserCheck className="w-4 h-4 text-cyan-400" />
-                Citizen Verification Feedback: <span className="font-bold text-white uppercase">{issue.verificationStatus}</span>
-              </div>
-            )}
+        {userFeedbackMsg && (
+          <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-green-800 text-[13px] font-bold flex items-center gap-3 shadow-sm">
+            <Sparkles className="w-5 h-5 text-green-600 shrink-0" />
+            {userFeedbackMsg}
           </div>
         )}
 
-        {/* AI Structuring & Incident Cluster Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800 space-y-3">
-            <span className="text-xs font-mono text-cyan-400 uppercase font-semibold flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" /> AI Routing & Dispatch Meta
-            </span>
-            <p className="text-xs text-slate-300">{issue.summary}</p>
-            <div className="pt-2 flex flex-wrap gap-2 text-xs">
-              <span className="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-slate-300 font-mono">
-                Department: <strong className="text-cyan-400">{issue.department}</strong>
+        {/* Main Card */}
+        <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 border-b border-slate-100 pb-6">
+            <div className="space-y-4 flex-1">
+              <div className="flex items-center gap-3">
+                <StatusBadge status={issue.status} />
+                <SeverityBadge severity={issue.severity} />
+              </div>
+              <h1 className="text-[24px] font-bold text-civic-dark leading-tight">{issue.description}</h1>
+              <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-[13px] text-slate-500 font-medium pt-1">
+                <span className="flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                  {issue.locationLabel}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Clock className="w-4 h-4 text-slate-400 shrink-0" />
+                  Reported {issue.reportedAt || issue.createdAt ? new Date(issue.reportedAt || issue.createdAt).toLocaleString() : 'Just now'}
+                </span>
+              </div>
+            </div>
+
+            <div className="bg-slate-50/50 p-5 rounded-2xl border border-slate-200 text-right space-y-1.5 shadow-sm shrink-0 min-w-[200px]">
+              <span className="text-[10px] text-slate-400 uppercase font-bold tracking-widest block">Incident Clustering</span>
+              <span className="text-[13px] font-bold text-civic-dark flex items-center gap-2 justify-end">
+                <Layers className="w-4 h-4 text-civic-primary" />
+                {incidentReportCount} {incidentReportCount === 1 ? 'Report' : 'Reports'}
               </span>
-              <span className="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-slate-300 font-mono">
-                Assigned Team: <strong className="text-slate-200">{issue.assignedTo || 'Unassigned'}</strong>
+              <span className="text-[11px] text-civic-primary font-bold block pt-1">
+                → 1 Work Order
               </span>
             </div>
           </div>
 
-          <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800 space-y-3">
-            <span className="text-xs font-mono text-slate-300 uppercase font-semibold flex items-center justify-between">
-              <span className="flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5 text-cyan-400" /> Linked Citizen Reports ({incidentReportCount})
-              </span>
-              <span className="text-[10px] text-cyan-400 font-mono">Incident #{issue.incidentId}</span>
-            </span>
-            <div className="space-y-2 max-h-36 overflow-y-auto">
-              {incidentReports.map(rep => (
-                <div key={rep.issueId} className="text-xs bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between text-slate-300">
-                  <span className="font-mono text-cyan-400 font-semibold">{rep.issueId}</span>
-                  <span className="truncate max-w-[180px]">{rep.description}</span>
-                  <span className="text-[10px] text-slate-500 font-mono">{rep.reportedBy}</span>
+          {/* TIMELINE VISUALIZATION */}
+          <div className="bg-[#fcfdfd] p-5 sm:p-8 rounded-2xl border border-slate-200 space-y-6 shadow-sm overflow-x-auto">
+            <span className="text-[11px] text-slate-400 uppercase font-bold tracking-widest block text-center mb-2">Resolution Progress Timeline</span>
+            <div className="grid grid-cols-5 gap-1 sm:gap-2 relative max-w-2xl mx-auto" style={{ minWidth: '280px' }}>
+              {/* Connecting Line background */}
+              <div className="absolute top-4 left-[10%] right-[10%] h-[3px] bg-slate-100 z-0 rounded-full"></div>
+              
+              {TIMELINE_STEPS.map((step, idx) => {
+                const isPassed = idx <= currentStepIdx;
+                const isCurrent = idx === currentStepIdx;
+
+                return (
+                  <div key={step.key} className="text-center space-y-3 relative z-10">
+                    <div className={`w-9 h-9 rounded-full mx-auto flex items-center justify-center text-[13px] font-bold transition-all ${
+                      isCurrent
+                        ? 'bg-civic-primary text-white shadow-md shadow-civic-primary/30 ring-4 ring-civic-primary/10'
+                        : isPassed
+                        ? 'bg-white text-civic-primary border-2 border-civic-primary shadow-sm'
+                        : 'bg-white text-slate-300 border-2 border-slate-200'
+                    }`}>
+                      {isPassed && !isCurrent ? <CheckCircle2 className="w-5 h-5" /> : idx + 1}
+                    </div>
+                    <span className={`text-[10px] block font-bold uppercase tracking-widest ${isPassed ? 'text-civic-dark' : 'text-slate-400'}`}>
+                      {step.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* BEFORE & AFTER RESOLUTION PHOTO DISPLAY */}
+          {issue.status === 'RESOLVED' && (
+            <div className="bg-[#f0f8f3] border border-[#d3ebd9] p-8 rounded-2xl space-y-6 shadow-sm">
+              <div className="flex items-center justify-between border-b border-[#d3ebd9] pb-4">
+                <span className="text-[14px] font-bold text-green-800 uppercase tracking-tight flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-green-600" /> Resolution Proof Complete
+                </span>
+                <span className="text-[11px] text-green-700/70 font-bold uppercase tracking-widest">Resolved: {new Date(issue.resolvedAt).toLocaleDateString()}</span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-2.5 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">BEFORE (Citizen Report Photo)</span>
+                  <S3Image src={issue.imageKey} alt="Before report photo" className="w-full h-56 object-cover rounded-lg border border-slate-100" />
                 </div>
-              ))}
+                <div className="space-y-2.5 bg-white p-4 rounded-xl border border-[#d3ebd9] shadow-sm">
+                  <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest block">AFTER (Authority Proof Photo)</span>
+                  <S3Image
+                    src={issue.resolutionImageKey}
+                    alt="After resolution photo"
+                    className="w-full h-56 object-cover rounded-lg border border-slate-100"
+                  />
+                </div>
+              </div>
+
+              {issue.resolutionNote && (
+                <div className="bg-white p-5 rounded-xl border border-[#d3ebd9] shadow-sm flex gap-3 items-start">
+                  <FileText className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest block mb-1">Authority Resolution Note</span>
+                    <p className="text-[14px] text-slate-700 font-medium italic">
+                      "{issue.resolutionNote}"
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* CITIZEN VERIFICATION PROMPT */}
+              {!issue.verificationStatus ? (
+                <div className="bg-white p-6 rounded-xl border border-slate-200 space-y-5 shadow-sm mt-4">
+                  <span className="text-[15px] font-bold text-civic-dark block text-center">Citizen Verification Check: Is this issue actually fixed?</span>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button
+                      onClick={() => handleCitizenVerification(true)}
+                      className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-civic-primary hover:bg-civic-secondary text-white font-bold text-[13px] flex items-center justify-center gap-2 transition-colors shadow-sm"
+                    >
+                      <CheckCircle2 className="w-4 h-4" /> YES, IT'S RESOLVED
+                    </button>
+                    <button
+                      onClick={() => handleCitizenVerification(false)}
+                      className="w-full sm:w-auto py-3.5 px-6 rounded-xl bg-white hover:bg-red-50 text-red-600 border border-red-200 font-bold text-[13px] flex items-center justify-center gap-2 transition-colors shadow-sm"
+                    >
+                      <XCircle className="w-4 h-4" /> NO, STILL UNRESOLVED
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-5 bg-white rounded-xl text-[13px] text-civic-dark flex items-center gap-3 border border-slate-200 shadow-sm mt-4 font-medium">
+                  <UserCheck className="w-5 h-5 text-civic-primary shrink-0" />
+                  <span>Citizen Verification Feedback: <strong className="font-bold uppercase tracking-wider text-civic-primary ml-1">{issue.verificationStatus}</strong></span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* AI Structuring & Incident Cluster Details */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4">
+            <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 space-y-5 shadow-sm">
+              <span className="text-[11px] text-slate-500 uppercase font-bold tracking-widest flex items-center gap-2 border-b border-slate-200 pb-3">
+                <Sparkles className="w-4 h-4 text-civic-primary" /> AI Routing & Dispatch Meta
+              </span>
+              <p className="text-[14px] text-slate-700 font-medium leading-relaxed">{issue.summary}</p>
+              <div className="pt-2 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm">
+                  <span className="text-[12px] text-slate-500 font-bold uppercase tracking-wider">Department</span>
+                  <strong className="text-[13px] text-civic-dark font-bold">{issue.department}</strong>
+                </div>
+                <div className="flex items-center justify-between bg-white px-4 py-3 rounded-xl border border-slate-200 shadow-sm">
+                  <span className="text-[12px] text-slate-500 font-bold uppercase tracking-wider">Assigned Team</span>
+                  <strong className="text-[13px] text-slate-800 font-bold">{issue.assignedTo || 'Unassigned'}</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-200 space-y-4 shadow-sm flex flex-col">
+              <span className="text-[11px] text-slate-500 uppercase font-bold tracking-widest flex items-center justify-between border-b border-slate-200 pb-3">
+                <span className="flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-slate-400" /> Linked Citizen Reports
+                </span>
+                <span className="bg-white text-civic-primary px-2.5 py-1 rounded shadow-sm border border-slate-200">Incident #{issue.incidentId}</span>
+              </span>
+              <div className="space-y-3 flex-grow overflow-y-auto max-h-56 pr-2 custom-scrollbar">
+                {incidentReports.map(rep => (
+                  <div key={rep.issueId} className="bg-white p-4 rounded-xl border border-slate-200 flex flex-col gap-1.5 text-slate-700 shadow-sm">
+                    <div className="flex justify-between items-center w-full">
+                      <span className="text-[12px] text-civic-dark font-bold uppercase tracking-widest">{rep.issueId}</span>
+                      <span className="text-[10px] text-slate-400 font-bold tracking-wider">{rep.reportedBy}</span>
+                    </div>
+                    <span className="truncate w-full text-[13px] font-medium text-slate-500">{rep.description}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
