@@ -97,8 +97,70 @@
 
 .glass-card:hover {
   border-color: #B8D4BC;
+  border-color: #B8D4BC;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(23, 74, 42, 0.10);
+}
+
+/* ── CIVICFIX MOTION DESIGN SYSTEM ── */
+.civic-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.civic-reveal.civic-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.civic-stagger-1 { transition-delay: 80ms; }
+.civic-stagger-2 { transition-delay: 160ms; }
+.civic-stagger-3 { transition-delay: 240ms; }
+.civic-stagger-4 { transition-delay: 320ms; }
+.civic-stagger-5 { transition-delay: 400ms; }
+.civic-stagger-6 { transition-delay: 480ms; }
+
+@keyframes civicPulseRing {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(67, 168, 95, 0.45);
+  }
+  70% {
+    transform: scale(1.04);
+    box-shadow: 0 0 0 8px rgba(67, 168, 95, 0);
+  }
+  100% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(67, 168, 95, 0);
+  }
+}
+
+.animate-civic-pulse {
+  animation: civicPulseRing 2.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.civic-skeleton-loader {
+  background: linear-gradient(90deg, #EEF6EE 25%, #DDEBDD 50%, #EEF6EE 75%);
+  background-size: 200% 100%;
+  animation: civicSkeletonLoading 1.5s infinite;
+}
+
+@keyframes civicSkeletonLoading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .civic-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .animate-civic-pulse {
+    animation: none !important;
+  }
 }
 
 /* Polished Card Hover Utilities */

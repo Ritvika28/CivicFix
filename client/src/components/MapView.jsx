@@ -8,11 +8,11 @@ import { Layers } from 'lucide-react';
 import { detectHotspots } from '../utils/intelligenceEngine';
 
 // Create SVG custom map icons based on severity
-function createCustomIcon(severity) {
-  let color = '#22c55e'; // LOW (Green)
-  if (severity === 'MEDIUM') color = '#f59e0b'; // Amber
-  if (severity === 'HIGH') color = '#f97316'; // Orange
-  if (severity === 'CRITICAL') color = '#ef4444'; // Red
+function createCustomIcon(severity, isHotspot = false) {
+  let color = '#2F7D46'; // LOW (Green)
+  if (severity === 'MEDIUM') color = '#E8A52B'; // Amber
+  if (severity === 'HIGH') color = '#E65100'; // Orange
+  if (severity === 'CRITICAL') color = '#D9534F'; // Red
 
   const svgIcon = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${color}" width="32" height="32">
@@ -21,7 +21,7 @@ function createCustomIcon(severity) {
   `;
 
   return L.divIcon({
-    className: 'custom-leaflet-marker',
+    className: `custom-leaflet-marker ${isHotspot || severity === 'CRITICAL' ? 'animate-civic-pulse' : ''}`,
     html: svgIcon,
     iconSize: [32, 32],
     iconAnchor: [16, 32],

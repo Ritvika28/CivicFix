@@ -20,6 +20,7 @@ import {
   recommendNextBestAction,
   buildIncidentTimeline
 } from '../utils/intelligenceEngine';
+import { AnimatedNumber } from '../hooks/useCountUp';
 
 export default function IntelligencePanel({ mainIssue = {}, incidentReports = [], allIssues = [], onNavigateToMap }) {
   const reports = incidentReports.length > 0 ? incidentReports : [mainIssue];
@@ -102,12 +103,12 @@ export default function IntelligencePanel({ mainIssue = {}, incidentReports = []
                       strokeDasharray={circumference}
                       strokeDashoffset={strokeDashoffset}
                       strokeLinecap="round"
-                      className="transition-all duration-700 ease-out"
+                      className="transition-all duration-1000 ease-out"
                     />
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                     <span className="text-[20px] font-extrabold text-[#174A2A] leading-none">
-                      {impact.score}
+                      <AnimatedNumber value={impact.score} />
                     </span>
                     <span className="text-[9px] text-[#52635A] font-bold uppercase tracking-tighter">
                       /100

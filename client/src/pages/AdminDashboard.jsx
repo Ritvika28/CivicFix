@@ -8,11 +8,18 @@ import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
 import CivicHealthCard from '../components/CivicHealthCard';
 import { detectHotspots, calculateImpactScore, getAiRecommendedAction } from '../utils/intelligenceEngine';
+import { AnimatedNumber } from '../hooks/useCountUp';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 export default function AdminDashboard() {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterDepartment, setFilterDepartment] = useState('ALL');
+
+  const headerRef = useScrollReveal();
+  const metricsRef = useScrollReveal();
+  const mapSectionRef = useScrollReveal();
+  const workOrdersRef = useScrollReveal();
 
   useEffect(() => {
     loadAdminData();
@@ -56,7 +63,7 @@ export default function AdminDashboard() {
       <div className="w-full max-w-[1380px] space-y-6">
         
         {/* Header & Reset Button */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#FFFFFF] p-6 rounded-2xl shadow-civic border border-[#D6E4D7]">
+        <div ref={headerRef} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-[#FFFFFF] p-6 rounded-2xl shadow-civic border border-[#D6E4D7] civic-reveal">
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-[19px] lg:text-[22px] font-extrabold text-[#174A2A] tracking-tight flex items-center gap-2">
@@ -80,31 +87,31 @@ export default function AdminDashboard() {
           </button>
         </div>
 
-        {/* Metrics Row */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4">
-          <div className="bg-[#FFFFFF] p-5 rounded-2xl border border-[#D6E4D7] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover">
+        {/* Metrics Row with Count-Up Animations */}
+        <div ref={metricsRef} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4 civic-reveal">
+          <div className="bg-[#FFFFFF] p-5 rounded-2xl border border-[#D6E4D7] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover civic-stagger-1">
             <span className="text-[10px] text-[#52635A] uppercase font-bold tracking-widest">Citizen Reports</span>
-            <span className="text-[28px] leading-none font-extrabold text-[#174A2A]">{totalReports}</span>
+            <span className="text-[28px] leading-none font-extrabold text-[#174A2A]"><AnimatedNumber value={totalReports} /></span>
           </div>
-          <div className="bg-[#EEF6EE] p-5 rounded-2xl border border-[#43A85F] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover">
+          <div className="bg-[#EEF6EE] p-5 rounded-2xl border border-[#43A85F] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover civic-stagger-2">
             <span className="text-[10px] text-[#1F5E35] uppercase font-bold tracking-widest">Physical Incidents</span>
-            <span className="text-[28px] leading-none font-extrabold text-[#174A2A]">{totalIncidents}</span>
+            <span className="text-[28px] leading-none font-extrabold text-[#174A2A]"><AnimatedNumber value={totalIncidents} /></span>
           </div>
-          <div className="bg-[#FFFFFF] p-5 rounded-2xl border border-[#D6E4D7] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover">
+          <div className="bg-[#FFFFFF] p-5 rounded-2xl border border-[#D6E4D7] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover civic-stagger-3">
             <span className="text-[10px] text-[#52635A] uppercase font-bold tracking-widest">Open Issues</span>
-            <span className="text-[28px] leading-none font-extrabold text-[#17312A]">{openCount}</span>
+            <span className="text-[28px] leading-none font-extrabold text-[#17312A]"><AnimatedNumber value={openCount} /></span>
           </div>
-          <div className="bg-[#FDECEC] p-5 rounded-2xl border border-[#F5C6CB] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover">
+          <div className="bg-[#FDECEC] p-5 rounded-2xl border border-[#F5C6CB] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover civic-stagger-4">
             <span className="text-[10px] text-[#A83232] uppercase font-bold tracking-widest">High / Critical</span>
-            <span className="text-[28px] leading-none font-extrabold text-[#D9534F]">{criticalCount}</span>
+            <span className="text-[28px] leading-none font-extrabold text-[#D9534F]"><AnimatedNumber value={criticalCount} /></span>
           </div>
-          <div className="bg-[#FFF3E0] p-5 rounded-2xl border border-[#FFCC80] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover">
+          <div className="bg-[#FFF3E0] p-5 rounded-2xl border border-[#FFCC80] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover civic-stagger-5">
             <span className="text-[10px] text-[#E65100] uppercase font-bold tracking-widest">In Progress</span>
-            <span className="text-[28px] leading-none font-extrabold text-[#E65100]">{inProgressCount}</span>
+            <span className="text-[28px] leading-none font-extrabold text-[#E65100]"><AnimatedNumber value={inProgressCount} /></span>
           </div>
-          <div className="bg-[#EEF6EE] p-5 rounded-2xl border border-[#43A85F] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover">
+          <div className="bg-[#EEF6EE] p-5 rounded-2xl border border-[#43A85F] space-y-1.5 shadow-civic flex flex-col items-center text-center civic-card-hover civic-stagger-6">
             <span className="text-[10px] text-[#1F5E35] uppercase font-bold tracking-widest">Resolved</span>
-            <span className="text-[28px] leading-none font-extrabold text-[#2F7D46]">{resolvedCount}</span>
+            <span className="text-[28px] leading-none font-extrabold text-[#2F7D46]"><AnimatedNumber value={resolvedCount} /></span>
           </div>
         </div>
 

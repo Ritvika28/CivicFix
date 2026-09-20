@@ -11,8 +11,11 @@ import {
   BarChart3,
   TrendingUp,
   Grid3X3,
+  Zap,
 } from 'lucide-react';
 import { ISSUE_CATEGORIES } from '../data/demoData';
+import { AnimatedNumber } from '../hooks/useCountUp';
+import { useScrollReveal } from '../hooks/useScrollReveal';
 
 const HERO_IMAGE = '/images/hero_hq.jpg';
 
@@ -64,6 +67,9 @@ const WORKFLOW_STEPS = [
 ];
 
 export default function Home() {
+  const catSectionRef = useScrollReveal();
+  const workflowSectionRef = useScrollReveal();
+
   return (
     <div className="bg-[#F6FAF5] min-h-screen pb-12" style={{ overflowX: 'hidden', width: '100%' }}>
       <style>{`
@@ -167,19 +173,21 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Stats */}
+              {/* Stats with Animated Count-Up */}
               <div className="grid grid-cols-3 gap-3 pt-2 max-w-[500px]">
                 {[
-                  { value: '10K+', label: 'Issues Reported', icon: BarChart3, accent: 'text-[#2F7D46]' },
-                  { value: '85%', label: 'Resolution Rate', icon: TrendingUp, accent: 'text-[#43A85F]' },
-                  { value: '25+', label: 'Municipal Categories', icon: Grid3X3, accent: 'text-[#2D8CCF]' },
+                  { rawVal: '10000', suffix: '+', label: 'Issues Reported', icon: BarChart3, accent: 'text-[#2F7D46]' },
+                  { rawVal: '85', suffix: '%', label: 'Resolution Rate', icon: TrendingUp, accent: 'text-[#43A85F]' },
+                  { rawVal: '25', suffix: '+', label: 'Municipal Categories', icon: Grid3X3, accent: 'text-[#2D8CCF]' },
                 ].map((stat) => (
                   <div
                     key={stat.label}
                     className="bg-[#FFFFFF] px-3.5 py-3 sm:px-4 sm:py-3.5 rounded-2xl border border-[#D6E4D7] shadow-civic civic-card-hover"
                   >
                     <stat.icon className={`w-4.5 h-4.5 ${stat.accent} mb-1.5`} />
-                    <div className="text-[20px] sm:text-[22px] font-extrabold text-[#174A2A] leading-none">{stat.value}</div>
+                    <div className="text-[20px] sm:text-[22px] font-extrabold text-[#174A2A] leading-none">
+                      <AnimatedNumber value={stat.rawVal} suffix={stat.suffix} />
+                    </div>
                     <div className="text-[10px] sm:text-[11px] text-[#52635A] font-bold leading-tight mt-1">{stat.label}</div>
                   </div>
                 ))}
@@ -199,8 +207,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── CATEGORIES ── */}
-      <section className="bg-[#F6FAF5] py-12 lg:py-14 border-b border-[#D6E4D7]">
+      {/* ── CATEGORIES (STAGGERED SCROLL REVEAL) ── */}
+      <section ref={catSectionRef} className="bg-[#F6FAF5] py-12 lg:py-14 border-b border-[#D6E4D7] civic-reveal">
         <div className="home-container">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
             <div>
@@ -220,12 +228,12 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {Object.entries(ISSUE_CATEGORIES).map(([key, cat]) => {
+            {Object.entries(ISSUE_CATEGORIES).map(([key, cat], idx) => {
               const ui = CATEGORY_UI[key] || CATEGORY_UI.OTHER;
               return (
                 <div
                   key={key}
-                  className="category-card relative aspect-[16/9] max-h-[185px] rounded-[16px] overflow-hidden group border border-[#D6E4D7] shadow-civic cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[#43A85F] hover:shadow-civic-hover"
+                  className={`category-card relative aspect-[16/9] max-h-[185px] rounded-[16px] overflow-hidden group border border-[#D6E4D7] shadow-civic cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[#43A85F] hover:shadow-civic-hover civic-stagger-${(idx % 6) + 1}`}
                 >
                   <img
                     src={ui.img}
@@ -266,8 +274,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── WORKFLOW ── */}
-      <section className="py-12 lg:py-14 bg-[#FFFFFF]">
+      {/* ── WORKFLOW (PROGRESSIVE REVEAL) ── */}
+      <section ref={workflowSectionRef} className="py-12 lg:py-14 bg-[#FFFFFF] civic-reveal">
         <div className="home-container">
           <div className="bg-[#EEF6EE] rounded-[24px] p-6 sm:p-8 lg:p-10 border border-[#D6E4D7] shadow-civic">
             <div className="mb-6 sm:mb-8 text-center sm:text-left">
@@ -284,7 +292,7 @@ export default function Home() {
                 const Icon = step.icon;
                 return (
                   <div key={step.title} className="relative min-w-0 flex flex-col items-center">
-                    <div className="workflow-card w-full bg-[#FFFFFF] p-5 rounded-[18px] border border-[#D6E4D7] shadow-sm flex flex-col items-center justify-center text-center min-h-[170px] h-full transition-all duration-300 hover:-translate-y-1 hover:border-[#43A85F]">
+                    <div className={`workflow-card w-full bg-[#FFFFFF] p-5 rounded-[18px] border border-[#D6E4D7] shadow-sm flex flex-col items-center justify-center text-center min-h-[170px] h-full transition-all duration-300 hover:-translate-y-1 hover:border-[#43A85F] civic-stagger-${idx + 1}`}>
                       {/* Centered Step Circle & Icon */}
                       <div className="relative mb-3 flex items-center justify-center">
                         <div
