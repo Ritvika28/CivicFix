@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, LayoutDashboard, Upload, CheckCircle2, AlertTriangle, Layers, UserCheck, Sparkles, Building2, MapPin, Zap, Target, Check } from 'lucide-react';
+import { ArrowLeft, LayoutDashboard, Upload, CheckCircle2, AlertTriangle, Layers, UserCheck, Sparkles, Building2, MapPin } from 'lucide-react';
 import { api } from '../services/api';
 import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
 import S3Image from '../components/S3Image';
-import { calculateImpactScore, getAiRecommendedAction } from '../utils/intelligenceEngine';
+import IntelligencePanel from '../components/IntelligencePanel';
 
 export default function AdminIssueDetails() {
   const { id } = useParams();
@@ -119,8 +119,6 @@ export default function AdminIssueDetails() {
   }
 
   const { issue, incidentReports, incidentReportCount } = data;
-  const impact = calculateImpactScore(incidentReports, issue);
-  const aiAction = getAiRecommendedAction(incidentReports, issue);
 
   return (
     <div className="w-full flex-1 flex flex-col items-center justify-start bg-civic-cream py-8 pb-16 px-4 sm:px-5 lg:px-8" style={{ boxSizing: 'border-box' }}>
@@ -154,6 +152,14 @@ export default function AdminIssueDetails() {
           </div>
         )}
 
+        {/* ── INCIDENT INTELLIGENCE PANEL ── */}
+        <IntelligencePanel
+          mainIssue={issue}
+          incidentReports={incidentReports}
+          allIssues={[]}
+          onNavigateToMap={() => navigate('/admin#map')}
+        />
+
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Report & Incident Info */}
@@ -169,60 +175,6 @@ export default function AdminIssueDetails() {
                 <div className="flex flex-row sm:flex-col items-center sm:items-end gap-3 shrink-0">
                   <StatusBadge status={issue.status} />
                   <SeverityBadge severity={issue.severity} />
-                </div>
-              </div>
-
-              {/* FEATURE #1: INCIDENT IMPACT SCORE CARD */}
-              <div className="bg-[#F8FAF9] p-6 rounded-2xl border border-slate-200 space-y-4 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-bold text-civic-dark flex items-center gap-2 uppercase tracking-wide">
-                    <Zap className="w-5 h-5 text-civic-primary" /> Incident Impact Score
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <span className={`text-[20px] font-extrabold ${impact.score >= 75 ? 'text-red-600' : impact.score >= 50 ? 'text-amber-600' : 'text-civic-primary'}`}>
-                      {impact.score}
-                    </span>
-                    <span className="text-[12px] text-slate-400 font-bold">/ 100</span>
-                  </div>
-                </div>
-
-                <div className="space-y-2 pt-1 border-t border-slate-200/60">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Score Breakdown:</span>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-700 font-medium">
-                    {impact.reasons.map((reason, idx) => (
-                      <li key={idx} className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-slate-200/80 shadow-xs">
-                        <Check className="w-3.5 h-3.5 text-civic-primary shrink-0" />
-                        <span>{reason}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-
-              {/* FEATURE #3: AI RECOMMENDED ACTION CARD */}
-              <div className="bg-emerald-50/60 p-6 rounded-2xl border border-emerald-200/80 space-y-4 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-[13px] font-bold text-emerald-950 flex items-center gap-2 uppercase tracking-wide">
-                    <Target className="w-5 h-5 text-civic-primary" /> Recommended Action
-                  </span>
-                  <span className="text-[10px] font-bold text-civic-primary bg-white px-2.5 py-1 rounded border border-emerald-200 uppercase tracking-widest shadow-xs">
-                    {aiAction.priority}
-                  </span>
-                </div>
-
-                <p className="text-[14px] font-bold text-emerald-900 leading-relaxed bg-white p-4 rounded-xl border border-emerald-200 shadow-xs">
-                  "{aiAction.recommendation}"
-                </p>
-
-                <div className="space-y-2 pt-1">
-                  <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">Why this recommendation?</span>
-                  <div className="flex flex-wrap gap-2 text-xs font-medium text-emerald-900">
-                    {aiAction.reasons.map((r, idx) => (
-                      <span key={idx} className="bg-white/90 px-3 py-1 rounded-md border border-emerald-200/70 text-[11px]">
-                        • {r}
-                      </span>
-                    ))}
-                  </div>
                 </div>
               </div>
 

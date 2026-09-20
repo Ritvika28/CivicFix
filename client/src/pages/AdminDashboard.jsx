@@ -6,6 +6,7 @@ import { mockApi } from '../services/mockApi';
 import MapView from '../components/MapView';
 import StatusBadge from '../components/StatusBadge';
 import SeverityBadge from '../components/SeverityBadge';
+import CivicHealthCard from '../components/CivicHealthCard';
 import { detectHotspots, calculateImpactScore, getAiRecommendedAction } from '../utils/intelligenceEngine';
 
 export default function AdminDashboard() {
@@ -106,6 +107,9 @@ export default function AdminDashboard() {
             <span className="text-[28px] leading-none font-bold text-green-700">{resolvedCount}</span>
           </div>
         </div>
+
+        {/* ── CIVIC HEALTH & WHAT CHANGED ANALYTICS ── */}
+        <CivicHealthCard allIssues={issues} />
 
         {/* MAP & HOTSPOT SECTION */}
         <div id="map" className="grid grid-cols-1 xl:grid-cols-[minmax(0,2fr)_minmax(260px,1fr)] gap-5">
