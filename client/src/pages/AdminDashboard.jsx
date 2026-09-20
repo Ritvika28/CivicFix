@@ -46,12 +46,28 @@ export default function AdminDashboard() {
     incidentMap[issue.incidentId].push(issue);
   });
 
-  const totalIncidents = Object.keys(incidentMap).length;
+  const incidentItems = Object.entries(incidentMap).map(([incId, repList]) => {
+    const canonical = repList.find(r => !r.duplicateOf) || repList[0];
+    const highestSev = repList.some(r => r.severity === 'CRITICAL')
+      ? 'CRITICAL'
+      : repList.some(r => r.severity === 'HIGH')
+      ? 'HIGH'
+      : repList.some(r => r.severity === 'MEDIUM')
+      ? 'MEDIUM'
+      : 'LOW';
+    const impact = calculateImpactScore(repList, canonical);
+    const aiAction = getAiRecommendedAction(repList, canonical);
+    return { incId, repList, canonical, highestSev, impact, aiAction };
+  });
+
+  const totalIncidents = incidentItems.length;
   const totalReports = issues.length;
-  const openCount = issues.filter(i => i.status === 'REPORTED' || i.status === 'VERIFIED').length;
-  const criticalCount = issues.filter(i => i.severity === 'CRITICAL' || i.severity === 'HIGH').length;
-  const inProgressCount = issues.filter(i => i.status === 'IN_PROGRESS' || i.status === 'ASSIGNED').length;
-  const resolvedCount = issues.filter(i => i.status === 'RESOLVED').length;
+  
+  // Calculate statistics based on actual Physical Incidents (canonical reports)
+  const openCount = incidentItems.filter(i => i.canonical.status === 'REPORTED' || i.canonical.status === 'VERIFIED').length;
+  const criticalCount = incidentItems.filter(i => i.highestSev === 'CRITICAL' || i.highestSev === 'HIGH').length;
+  const inProgressCount = incidentItems.filter(i => i.canonical.status === 'IN_PROGRESS' || i.canonical.status === 'ASSIGNED').length;
+  const resolvedCount = incidentItems.filter(i => i.canonical.status === 'RESOLVED').length;
 
   const filteredIssues = issues.filter(i => {
     if (filterDepartment !== 'ALL') return i.department === filterDepartment;
@@ -209,23 +225,9 @@ export default function AdminDashboard() {
 
           {/* Incident Data Preparation */}
           {(() => {
-            const incidentItems = Object.entries(incidentMap)
-              .map(([incId, repList]) => {
-                const canonical = repList.find(r => !r.duplicateOf) || repList[0];
-                const highestSev = repList.some(r => r.severity === 'CRITICAL')
-                  ? 'CRITICAL'
-                  : repList.some(r => r.severity === 'HIGH')
-                  ? 'HIGH'
-                  : repList.some(r => r.severity === 'MEDIUM')
-                  ? 'MEDIUM'
-                  : 'LOW';
-                const impact = calculateImpactScore(repList, canonical);
-                const aiAction = getAiRecommendedAction(repList, canonical);
-                return { incId, repList, canonical, highestSev, impact, aiAction };
-              })
-              .filter(({ canonical }) => filterDepartment === 'ALL' || canonical.department === filterDepartment);
+            const filteredIncidentItems = incidentItems.filter(({ canonical }) => filterDepartment === 'ALL' || canonical.department === filterDepartment);
 
-            if (incidentItems.length === 0) {
+            if (filteredIncidentItems.length === 0) {
               return (
                 <div className="p-8 text-center text-[#52635A] font-medium text-xs bg-[#F6FAF5] rounded-xl border border-[#D6E4D7]">
                   No incident work orders found matching selected department.
@@ -251,7 +253,7 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#EEF6EE] text-[13px] font-medium">
-                      {incidentItems.map(({ incId, repList, canonical, highestSev, impact }) => (
+                      {filteredIncidentItems.map(({ incId, repList, canonical, highestSev, impact }) => (
                         <tr key={incId} className={`hover:bg-[#F6FAF5] transition-colors ${canonical.status === 'REOPENED' ? 'bg-[#FDECEC]/40' : ''}`}>
                           <td className="p-3.5 font-bold text-[#174A2A]">
                             <div className="truncate">{incId}</div>
@@ -297,7 +299,7 @@ export default function AdminDashboard() {
 
                 {/* Mobile / Tablet View: Responsive Card Grid (Fits 100% inside container) */}
                 <div className="block lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                  {incidentItems.map(({ incId, repList, canonical, highestSev, impact }) => (
+                  {filteredIncidentItems.map(({ incId, repList, canonical, highestSev, impact }) => (
                     <div key={incId} className={`p-4 rounded-xl border border-[#D6E4D7] shadow-sm space-y-3 bg-[#FFFFFF] ${canonical.status === 'REOPENED' ? 'bg-[#FDECEC]/40 border-[#F5C6CB]' : ''}`}>
                       <div className="flex items-center justify-between gap-2 border-b border-[#EEF6EE] pb-2.5">
                         <div className="flex items-center gap-2">

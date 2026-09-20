@@ -29,6 +29,10 @@ export default function CitizenDashboard() {
     if (filter === 'IN_PROGRESS') return issue.status === 'ASSIGNED' || issue.status === 'IN_PROGRESS';
     if (filter === 'RESOLVED') return issue.status === 'RESOLVED';
     return true;
+  }).sort((a, b) => {
+    const timeA = new Date(a.reportedAt || a.createdAt || 0).getTime();
+    const timeB = new Date(b.reportedAt || b.createdAt || 0).getTime();
+    return timeB - timeA;
   });
 
   const totalReports = issues.length;
