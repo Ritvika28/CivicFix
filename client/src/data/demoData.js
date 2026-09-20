@@ -43,6 +43,86 @@ export const ISSUE_CATEGORIES = {
     label: 'Other Infrastructure',
     department: 'GENERAL_SERVICES',
     types: ['GENERAL_CIVIC']
+  },
+  FOOTPATH: {
+    label: 'Footpaths & Pavements',
+    department: 'PUBLIC_WORKS',
+    types: ['BROKEN_PAVEMENT', 'OBSTRUCTION']
+  },
+  TOILET: {
+    label: 'Public Toilets',
+    department: 'SANITATION',
+    types: ['UNCLEAN_TOILET', 'PLUMBING_ISSUE']
+  },
+  STORMWATER: {
+    label: 'Stormwater Management',
+    department: 'DRAINAGE',
+    types: ['BLOCKED_STORM_DRAIN']
+  },
+  STREET_CLEANING: {
+    label: 'Street Cleaning',
+    department: 'SANITATION',
+    types: ['DIRTY_STREET', 'DEBRIS']
+  },
+  PARKS: {
+    label: 'Public Parks & Green Spaces',
+    department: 'PARKS_REC',
+    types: ['OVERGROWN_WEEDS', 'BROKEN_EQUIPMENT']
+  },
+  TRAFFIC_SIGNALS: {
+    label: 'Traffic Signals',
+    department: 'TRANSPORTATION',
+    types: ['BROKEN_SIGNAL']
+  },
+  ROAD_SIGNS: {
+    label: 'Road Signs & Markings',
+    department: 'TRANSPORTATION',
+    types: ['MISSING_SIGN', 'FADED_MARKING']
+  },
+  BENCHES: {
+    label: 'Public Benches & Street Furniture',
+    department: 'GENERAL_SERVICES',
+    types: ['BROKEN_BENCH']
+  },
+  OPEN_DRAINS: {
+    label: 'Open Drain Maintenance',
+    department: 'DRAINAGE',
+    types: ['SILT_ACCUMULATION']
+  },
+  TREES: {
+    label: 'Tree & Vegetation Maintenance',
+    department: 'PARKS_REC',
+    types: ['FALLEN_TREE', 'DANGEROUS_BRANCH']
+  },
+  FLOODING: {
+    label: 'Flooding & Waterlogging',
+    department: 'DRAINAGE',
+    types: ['WATERLOGGING']
+  },
+  PUBLIC_LIGHTING: {
+    label: 'Public Lighting',
+    department: 'ELECTRICAL',
+    types: ['PARK_LIGHT_OUT']
+  },
+  PUBLIC_BUILDINGS: {
+    label: 'Public Buildings',
+    department: 'GENERAL_SERVICES',
+    types: ['MAINTENANCE_REQUIRED']
+  },
+  PARKING: {
+    label: 'Parking Infrastructure',
+    department: 'TRANSPORTATION',
+    types: ['ILLEGAL_PARKING', 'BROKEN_METER']
+  },
+  COMMUNITY_FACILITIES: {
+    label: 'Community Facilities',
+    department: 'GENERAL_SERVICES',
+    types: ['FACILITY_ISSUE']
+  },
+  BUS_STOPS: {
+    label: 'Bus Stops & Shelters',
+    department: 'TRANSPORTATION',
+    types: ['DAMAGED_SHELTER']
   }
 };
 

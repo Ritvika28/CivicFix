@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -69,6 +69,17 @@ const WORKFLOW_STEPS = [
 export default function Home() {
   const catSectionRef = useScrollReveal();
   const workflowSectionRef = useScrollReveal();
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setIsCategoryModalOpen(false);
+    };
+    if (isCategoryModalOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isCategoryModalOpen]);
 
   return (
     <div className="bg-[#F6FAF5] min-h-screen pb-12" style={{ overflowX: 'hidden', width: '100%' }}>
@@ -112,6 +123,33 @@ export default function Home() {
         }
         @media (max-width: 1280px) {
           .hero-heading { font-size: clamp(2rem, 4vw, 3.25rem); }
+        }
+        .modal-category-item {
+          transition:
+            background-color 250ms ease,
+            color 250ms ease,
+            border-color 250ms ease,
+            transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+            box-shadow 250ms ease;
+        }
+        .modal-category-item:hover,
+        .modal-category-item:focus-visible {
+          background: #3F7D4A;
+          color: #FFFFFF;
+          border-color: #285D36;
+          transform: translateY(-3px) scale(1.01);
+          box-shadow: 0 8px 20px rgba(63, 125, 74, 0.12);
+          outline: none;
+        }
+        .modal-category-dot {
+          color: #3F7D4A;
+          opacity: 0;
+          transition: opacity 250ms ease, color 250ms ease;
+        }
+        .modal-category-item:hover .modal-category-dot,
+        .modal-category-item:focus-visible .modal-category-dot {
+          opacity: 1;
+          color: #FFFFFF;
         }
       `}</style>
 
@@ -221,6 +259,7 @@ export default function Home() {
             </div>
             <button
               type="button"
+              onClick={() => setIsCategoryModalOpen(true)}
               className="text-[13px] font-extrabold text-[#2F7D46] hover:text-[#1F5E35] flex items-center gap-1 uppercase tracking-wider transition-colors shrink-0"
             >
               View All Categories <ArrowRight className="w-3.5 h-3.5" />
@@ -228,7 +267,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {Object.entries(ISSUE_CATEGORIES).map(([key, cat], idx) => {
+            {Object.entries(ISSUE_CATEGORIES).slice(0, 7).map(([key, cat], idx) => {
               const ui = CATEGORY_UI[key] || CATEGORY_UI.OTHER;
               return (
                 <Link
@@ -328,6 +367,41 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* ── CATEGORY MODAL ── */}
+      {isCategoryModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#14231B]/40 backdrop-blur-sm" onClick={() => setIsCategoryModalOpen(false)}>
+          <div 
+            className="bg-[#FFFFFF] w-full max-w-4xl rounded-[20px] shadow-2xl border border-[#DDE4DA] overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-6 sm:px-8 border-b border-[#EEF4EA]">
+              <h3 className="text-xl font-extrabold text-[#285D36]">More Municipal Categories</h3>
+              <button 
+                onClick={() => setIsCategoryModalOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-[#EEF4EA] hover:bg-[#DDEEDB] text-[#14231B] transition-colors"
+                aria-label="Close categories"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6 sm:px-8 overflow-y-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {Object.entries(ISSUE_CATEGORIES).slice(7).map(([key, cat]) => (
+                  <Link
+                    to="/report"
+                    key={key}
+                    onClick={() => setIsCategoryModalOpen(false)}
+                    className="modal-category-item block p-4 rounded-xl border border-[#DDE4DA] bg-[#FFFFFF] text-[#14231B] text-[14px] font-bold"
+                  >
+                    <span className="modal-category-dot mr-2">•</span>
+                    {cat.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
