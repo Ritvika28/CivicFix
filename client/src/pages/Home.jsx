@@ -231,9 +231,10 @@ export default function Home() {
             {Object.entries(ISSUE_CATEGORIES).map(([key, cat], idx) => {
               const ui = CATEGORY_UI[key] || CATEGORY_UI.OTHER;
               return (
-                <div
+                <Link
+                  to="/report"
                   key={key}
-                  className={`category-card relative aspect-[16/9] max-h-[185px] rounded-[16px] overflow-hidden group border border-[#D6E4D7] shadow-civic cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[#43A85F] hover:shadow-civic-hover civic-stagger-${(idx % 6) + 1}`}
+                  className={`block category-card relative aspect-[16/9] max-h-[185px] rounded-[16px] overflow-hidden group border border-[#D6E4D7] shadow-civic cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:border-[#43A85F] hover:shadow-civic-hover civic-stagger-${(idx % 6) + 1}`}
                 >
                   <img
                     src={ui.img}
@@ -267,7 +268,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>
