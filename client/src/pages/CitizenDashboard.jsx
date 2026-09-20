@@ -43,23 +43,23 @@ export default function CitizenDashboard() {
   ];
 
   return (
-    <div className="min-h-screen pt-6 pb-16" style={{ background: '#F7F8F3', overflowX: 'hidden' }}>
+    <div className="min-h-screen pt-8 pb-16 bg-[#F6FAF5]" style={{ overflowX: 'hidden' }}>
       <style>{`
         .cr-card {
           transition: transform 380ms cubic-bezier(0.22,1,0.36,1), box-shadow 380ms cubic-bezier(0.22,1,0.36,1), border-color 380ms ease;
         }
         .cr-card:hover {
           transform: translateY(-3px);
-          box-shadow: 0 10px 30px rgba(30,60,35,0.09);
-          border-color: #A3C4AA !important;
+          box-shadow: 0 8px 24px rgba(23, 74, 42, 0.10);
+          border-color: #43A85F !important;
         }
         .cr-timeline-btn {
           transition: background 280ms ease, border-color 280ms ease, color 280ms ease;
         }
         .cr-timeline-btn:hover {
-          background: #EEF4EA !important;
-          border-color: #3F7D4A !important;
-          color: #285D36 !important;
+          background: #EEF6EE !important;
+          border-color: #43A85F !important;
+          color: #174A2A !important;
         }
         .cr-timeline-btn:hover .cr-arrow {
           transform: translateX(4px);
@@ -68,22 +68,22 @@ export default function CitizenDashboard() {
           transition: transform 280ms ease;
         }
         .cr-filter-active {
-          background: #caecd7 !important;
-          color: #0f261d !important;
-          border-color: #6fc197 !important;
-          box-shadow: 0 2px 8px rgba(30,68,52,0.12);
+          background: #EEF6EE !important;
+          color: #1F5E35 !important;
+          border-color: #43A85F !important;
+          box-shadow: 0 2px 8px rgba(31, 94, 53, 0.12);
           font-weight: 800 !important;
         }
         .cr-filter-btn {
           background: #ffffff;
-          color: #65716A;
-          border-color: #DDE4DA;
+          color: #52635A;
+          border-color: #D6E4D7;
           transition: background 200ms ease, color 200ms ease, border-color 200ms ease;
         }
         .cr-filter-btn:hover {
-          background: #EEF4EA;
-          color: #3F7D4A;
-          border-color: #A3C4AA;
+          background: #F6FAF5;
+          color: #1F5E35;
+          border-color: #43A85F;
         }
         .cr-skeleton {
           animation: cr-pulse 1.6s ease-in-out infinite;
@@ -99,56 +99,55 @@ export default function CitizenDashboard() {
         {/* ── PAGE HEADER ── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-[26px] sm:text-[30px] font-extrabold text-civic-dark tracking-tight flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#EEF4EA' }}>
-                <UserCheck className="w-5 h-5" style={{ color: '#3F7D4A' }} />
+            <h1 className="text-[26px] sm:text-[30px] font-extrabold text-[#174A2A] tracking-tight flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-[#EEF6EE] border border-[#D6E4D7]">
+                <UserCheck className="w-5 h-5 text-[#2F7D46]" />
               </div>
               My Citizen Reports
             </h1>
-            <p className="text-[14px] font-medium pl-[52px]" style={{ color: '#65716A' }}>
+            <p className="text-[14px] font-medium text-[#52635A] pl-[52px]">
               Track real-time resolution progress of issues reported by you and your community.
             </p>
           </div>
 
           <Link
             to="/report"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-civic-950 font-extrabold text-[14px] transition-all hover:-translate-y-0.5 shrink-0 border border-civic-400"
-            style={{ background: '#caecd7', boxShadow: '0 4px 14px rgba(63,125,74,0.15)' }}
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-extrabold text-[14px] transition-all hover:-translate-y-0.5 shrink-0 bg-[#2F7D46] hover:bg-[#1F5E35] shadow-md shadow-[#2F7D46]/20"
           >
-            <PlusCircle className="w-4 h-4 text-civic-950" />
+            <PlusCircle className="w-4 h-4 text-white" />
             Report New Issue
           </Link>
         </div>
 
         {/* ── STAT CARDS ── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4" style={{ border: '1px solid #DDE4DA', borderTop: '3px solid #B3C9B6' }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#EEF4EA', border: '1px solid #C8DECA' }}>
-              <Layers className="w-6 h-6" style={{ color: '#3F7D4A' }} />
+          <div className="bg-[#FFFFFF] rounded-2xl p-5 shadow-civic flex items-center gap-4 border border-[#D6E4D7] border-t-4 border-t-[#2F7D46] civic-card-hover">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-[#EEF6EE] border border-[#D6E4D7]">
+              <Layers className="w-6 h-6 text-[#2F7D46]" />
             </div>
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: '#65716A' }}>Total Submitted</div>
-              <div className="text-[30px] leading-none font-extrabold" style={{ color: '#14231B' }}>{totalReports}</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-[#52635A] mb-0.5">Total Submitted</div>
+              <div className="text-[30px] leading-none font-extrabold text-[#174A2A]">{totalReports}</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4" style={{ border: '1px solid #DDE4DA', borderTop: '3px solid #D59A32' }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#F7EEDB', border: '1px solid #E8D4A0' }}>
-              <Clock className="w-6 h-6" style={{ color: '#D59A32' }} />
+          <div className="bg-[#FFFFFF] rounded-2xl p-5 shadow-civic flex items-center gap-4 border border-[#D6E4D7] border-t-4 border-t-[#E8A52B] civic-card-hover">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-[#FFF4D6] border border-[#FFE082]">
+              <Clock className="w-6 h-6 text-[#E8A52B]" />
             </div>
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: '#C07B1A' }}>In Progress</div>
-              <div className="text-[30px] leading-none font-extrabold" style={{ color: '#A8660E' }}>{inProgressReports}</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-[#8A5A00] mb-0.5">In Progress</div>
+              <div className="text-[30px] leading-none font-extrabold text-[#8A5A00]">{inProgressReports}</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 shadow-sm flex items-center gap-4" style={{ border: '1px solid #DDE4DA', borderTop: '3px solid #4F8F58' }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: '#E5F1E5', border: '1px solid #B3D4B7' }}>
-              <ShieldCheck className="w-6 h-6" style={{ color: '#4F8F58' }} />
+          <div className="bg-[#FFFFFF] rounded-2xl p-5 shadow-civic flex items-center gap-4 border border-[#D6E4D7] border-t-4 border-t-[#43A85F] civic-card-hover">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-[#EEF6EE] border border-[#D6E4D7]">
+              <ShieldCheck className="w-6 h-6 text-[#43A85F]" />
             </div>
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: '#3F7D4A' }}>Resolved &amp; Verified</div>
-              <div className="text-[30px] leading-none font-extrabold" style={{ color: '#285D36' }}>{resolvedReports}</div>
+              <div className="text-[10px] font-bold uppercase tracking-widest text-[#1F5E35] mb-0.5">Resolved &amp; Verified</div>
+              <div className="text-[30px] leading-none font-extrabold text-[#174A2A]">{resolvedReports}</div>
             </div>
           </div>
         </div>
@@ -172,26 +171,26 @@ export default function CitizenDashboard() {
         {loading ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {[1, 2, 3, 4].map(n => (
-              <div key={n} className="cr-skeleton bg-white rounded-2xl p-5 space-y-4 shadow-sm" style={{ border: '1px solid #DDE4DA' }}>
-                <div className="flex justify-between items-center pb-4" style={{ borderBottom: '1px solid #EEF1EB' }}>
-                  <div className="h-3.5 w-28 rounded-md" style={{ background: '#EEF1EB' }} />
-                  <div className="h-6 w-32 rounded-md" style={{ background: '#EEF1EB' }} />
+              <div key={n} className="cr-skeleton bg-[#FFFFFF] rounded-2xl p-5 space-y-4 border border-[#D6E4D7] shadow-civic">
+                <div className="flex justify-between items-center pb-4 border-b border-[#EEF6EE]">
+                  <div className="h-3.5 w-28 rounded-md bg-[#EEF6EE]" />
+                  <div className="h-6 w-32 rounded-md bg-[#EEF6EE]" />
                 </div>
-                <div className="h-5 w-4/5 rounded-md" style={{ background: '#EEF1EB' }} />
-                <div className="h-4 w-3/5 rounded-md" style={{ background: '#EEF1EB' }} />
-                <div className="h-14 rounded-xl" style={{ background: '#EEF1EB' }} />
-                <div className="h-10 rounded-xl" style={{ background: '#EEF1EB' }} />
+                <div className="h-5 w-4/5 rounded-md bg-[#EEF6EE]" />
+                <div className="h-4 w-3/5 rounded-md bg-[#EEF6EE]" />
+                <div className="h-14 rounded-xl bg-[#EEF6EE]" />
+                <div className="h-10 rounded-xl bg-[#EEF6EE]" />
               </div>
             ))}
           </div>
         ) : filteredIssues.length === 0 ? (
-          <div className="bg-white rounded-2xl p-14 text-center shadow-sm" style={{ border: '1px solid #DDE4DA' }}>
-            <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center" style={{ background: '#EEF4EA' }}>
-              <Inbox className="w-7 h-7" style={{ color: '#3F7D4A' }} />
+          <div className="bg-[#FFFFFF] rounded-2xl p-14 text-center border border-[#D6E4D7] shadow-civic">
+            <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-[#EEF6EE] border border-[#D6E4D7]">
+              <Inbox className="w-7 h-7 text-[#2F7D46]" />
             </div>
-            <p className="font-bold text-[15px] mb-1" style={{ color: '#14231B' }}>No reports found</p>
-            <p className="text-[13px] mb-4" style={{ color: '#65716A' }}>No citizen issue reports match this filter.</p>
-            <Link to="/report" className="text-[13px] font-bold hover:underline" style={{ color: '#3F7D4A' }}>
+            <p className="font-extrabold text-[15px] mb-1 text-[#174A2A]">No reports found</p>
+            <p className="text-[13px] mb-4 text-[#52635A]">No citizen issue reports match this filter.</p>
+            <Link to="/report" className="text-[13px] font-extrabold hover:underline text-[#2F7D46]">
               Submit a new citizen report →
             </Link>
           </div>
@@ -203,17 +202,16 @@ export default function CitizenDashboard() {
               return (
                 <div
                   key={issue.issueId}
-                  className="cr-card bg-white rounded-2xl flex flex-col shadow-sm"
-                  style={{ border: '1px solid #DDE4DA' }}
+                  className="cr-card bg-[#FFFFFF] rounded-2xl flex flex-col border border-[#D6E4D7] shadow-civic"
                 >
                   {/* Card Body */}
                   <div className="p-5 space-y-4 flex-1">
 
                     {/* Top Row */}
-                    <div className="flex items-center justify-between gap-2 pb-4" style={{ borderBottom: '1px solid #EEF1EB' }}>
+                    <div className="flex items-center justify-between gap-2 pb-4 border-b border-[#EEF6EE]">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="text-[10px] font-bold uppercase tracking-widest shrink-0" style={{ color: '#65716A' }}>Report</span>
-                        <span className="text-[13px] font-extrabold truncate" style={{ color: '#285D36' }}>#{issue.issueId}</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest shrink-0 text-[#52635A]">Report</span>
+                        <span className="text-[13px] font-extrabold truncate text-[#1F5E35]">#{issue.issueId}</span>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap justify-end shrink-0">
                         <StatusBadge status={issue.status} />
@@ -222,18 +220,18 @@ export default function CitizenDashboard() {
                     </div>
 
                     {/* Description */}
-                    <p className="font-semibold leading-snug line-clamp-2 text-[15px]" style={{ color: '#14231B' }}>
+                    <p className="font-extrabold leading-snug line-clamp-2 text-[15px] text-[#17312A]">
                       {issue.description}
                     </p>
 
                     {/* Location + Date */}
-                    <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[12px] font-medium" style={{ color: '#65716A' }}>
+                    <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[12px] font-medium text-[#52635A]">
                       <span className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 shrink-0" style={{ color: '#3F7D4A' }} />
+                        <MapPin className="w-3.5 h-3.5 shrink-0 text-[#2F7D46]" />
                         <span className="truncate max-w-[180px]">{issue.locationLabel}</span>
                       </span>
                       <span className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 shrink-0" style={{ color: '#3F7D4A' }} />
+                        <Calendar className="w-3.5 h-3.5 shrink-0 text-[#2F7D46]" />
                         {issue.reportedAt || issue.createdAt
                           ? new Date(issue.reportedAt || issue.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
                           : 'Recent'}
@@ -242,19 +240,17 @@ export default function CitizenDashboard() {
 
                     {/* Incident Relationship Panel */}
                     <div
-                      className="px-4 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
-                      style={{ background: '#F2F6F0', border: '1px solid #C8DECA' }}
+                      className="px-4 py-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#F6FAF5] border border-[#D6E4D7]"
                     >
                       <div className="flex items-center gap-2 min-w-0">
-                        <Layers className="w-4 h-4 shrink-0" style={{ color: '#3F7D4A' }} />
-                        <span className="text-[11px] font-bold uppercase tracking-wide truncate" style={{ color: '#65716A' }}>
+                        <Layers className="w-4 h-4 shrink-0 text-[#2F7D46]" />
+                        <span className="text-[11px] font-bold uppercase tracking-wide truncate text-[#52635A]">
                           Incident{' '}
-                          <span className="font-extrabold" style={{ color: '#285D36' }}>{issue.incidentId}</span>
+                          <span className="font-extrabold text-[#1F5E35]">{issue.incidentId}</span>
                         </span>
                       </div>
                       <span
-                        className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border shrink-0 self-start sm:self-auto"
-                        style={{ background: '#EEF4EA', borderColor: '#B3D4B7', color: '#3F7D4A' }}
+                        className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg border shrink-0 self-start sm:self-auto bg-[#EEF6EE] border-[#43A85F] text-[#1F5E35]"
                       >
                         {linkedCount} {linkedCount === 1 ? 'Report' : 'Reports'} → 1 Work Order
                       </span>
@@ -265,12 +261,11 @@ export default function CitizenDashboard() {
                   <div className="px-5 pb-5">
                     <Link
                       to={`/issues/${issue.issueId}`}
-                      className="cr-timeline-btn w-full py-3 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 border"
-                      style={{ background: '#ffffff', borderColor: '#DDE4DA', color: '#14231B' }}
+                      className="cr-timeline-btn w-full py-3 px-4 rounded-xl text-[13px] font-bold flex items-center justify-center gap-2 border bg-[#FFFFFF] border-[#D6E4D7] text-[#17312A]"
                     >
-                      <FileText className="w-4 h-4 shrink-0" style={{ color: '#3F7D4A' }} />
+                      <FileText className="w-4 h-4 shrink-0 text-[#2F7D46]" />
                       View Full Timeline &amp; Details
-                      <ArrowRight className="w-4 h-4 cr-arrow" style={{ color: '#3F7D4A' }} />
+                      <ArrowRight className="w-4 h-4 cr-arrow text-[#2F7D46]" />
                     </Link>
                   </div>
                 </div>

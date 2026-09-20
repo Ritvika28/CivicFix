@@ -2,10 +2,10 @@ import React from 'react';
 import { AlertTriangle, AlertCircle, ShieldAlert, Info } from 'lucide-react';
 
 const SEVERITY_CONFIG = {
-  LOW: { label: 'Low', color: 'bg-slate-50 text-slate-600 border-slate-200 font-bold uppercase tracking-widest', icon: Info },
-  MEDIUM: { label: 'Medium', color: 'bg-amber-50 text-amber-700 border-amber-200 font-bold uppercase tracking-widest', icon: AlertCircle },
-  HIGH: { label: 'High', color: 'bg-orange-50 text-orange-700 border-orange-200 font-bold uppercase tracking-widest', icon: AlertTriangle },
-  CRITICAL: { label: 'CRITICAL', color: 'bg-red-100 text-red-900 border-red-300 font-extrabold uppercase tracking-widest animate-pulse shadow-sm', icon: ShieldAlert }
+  LOW: { label: 'Low', color: 'bg-[#EEF6EE] text-[#1F5E35] border-[#D6E4D7] font-bold uppercase tracking-widest', icon: Info },
+  MEDIUM: { label: 'Medium', color: 'bg-[#FFF4D6] text-[#8A5A00] border-[#FFE082] font-bold uppercase tracking-widest', icon: AlertCircle },
+  HIGH: { label: 'High Priority', color: 'bg-[#FFF3E0] text-[#E65100] border-[#FFCC80] font-bold uppercase tracking-widest', icon: AlertTriangle },
+  CRITICAL: { label: 'CRITICAL', color: 'bg-[#FDECEC] text-[#A83232] border-[#F5C6CB] font-extrabold uppercase tracking-widest shadow-sm', icon: ShieldAlert }
 };
 
 export default function SeverityBadge({ severity }) {

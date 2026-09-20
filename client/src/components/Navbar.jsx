@@ -37,28 +37,30 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  const activeLinkClasses = "px-4 py-2 bg-civic-50 text-civic-700 font-bold border-b-2 border-civic-500";
-  const inactiveLinkClasses = "px-4 py-2 text-slate-600 font-medium hover:text-civic-700 hover:bg-slate-50 rounded-lg transition-colors";
+  const activeLinkClasses = "px-4 py-2 bg-[#EEF6EE] text-[#1F5E35] font-bold border-b-2 border-[#43A85F] rounded-t-lg shadow-sm transition-all";
+  const inactiveLinkClasses = "px-4 py-2 text-[#52635A] font-medium hover:text-[#1F5E35] hover:bg-[#F6FAF5] rounded-lg transition-all duration-150";
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FDFCF8]/95 backdrop-blur-md border-b border-[#E6E8E3]" style={{ width: '100%', boxSizing: 'border-box' }}>
+    <header className="sticky top-0 z-50 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#D6E4D7] shadow-sm" style={{ width: '100%', boxSizing: 'border-box' }}>
       <div className="max-w-[1380px] mx-auto px-4 sm:px-5 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-3 min-w-0">
           {/* Brand Logo */}
-          <Link to={userRole === 'admin' ? '/admin' : '/'} className="flex items-center gap-2 group shrink-0 min-w-0">
-            <Leaf className={`w-8 h-8 ${userRole === 'admin' ? 'text-slate-700' : 'text-civic-700'} group-hover:scale-105 transition-transform`} />
+          <Link to={userRole === 'admin' ? '/admin' : '/'} className="flex items-center gap-2.5 group shrink-0 min-w-0">
+            <div className="p-1.5 rounded-lg bg-[#EEF6EE] border border-[#D6E4D7] group-hover:scale-105 transition-transform">
+              <Leaf className="w-6 h-6 text-[#2F7D46]" />
+            </div>
             <div>
-              <span className="text-[22px] font-bold tracking-tight text-civic-dark flex items-center gap-1">
-                Civic<span className={userRole === 'admin' ? 'text-slate-600' : 'text-civic-600'}>Fix</span>
+              <span className="text-[22px] font-bold tracking-tight text-[#174A2A] flex items-center gap-1">
+                Civic<span className="text-[#2F7D46]">Fix</span>
               </span>
-              <span className="text-[10px] text-slate-500 block -mt-1 tracking-wide">
+              <span className="text-[10px] text-[#52635A] block -mt-1 tracking-wide font-medium">
                 Cleaner Cities. Stronger Communities.
               </span>
             </div>
           </Link>
 
           {/* Navigation Links — Role Specific */}
-          <nav className="hidden md:flex items-center gap-1 flex-1 justify-center min-w-0">
+          <nav className="hidden md:flex items-center gap-1.5 flex-1 justify-center min-w-0">
             {userRole === 'admin' ? (
               <>
                 <Link to="/admin" className={isActive('/admin') ? activeLinkClasses : inactiveLinkClasses}>
@@ -87,25 +89,25 @@ export default function Navbar() {
           </nav>
 
           {/* Role Switcher Pill & Auth Actions */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-1 bg-white border border-[#E6E8E3] p-1 rounded-lg text-sm shadow-sm">
-              <span className="text-[11px] text-slate-400 px-3 font-semibold uppercase tracking-widest hidden sm:inline">Role:</span>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="flex items-center gap-1 bg-[#F6FAF5] border border-[#D6E4D7] p-1 rounded-lg text-sm shadow-sm">
+              <span className="text-[11px] text-[#52635A] px-2.5 font-semibold uppercase tracking-widest hidden sm:inline">Role:</span>
               <button
                 onClick={() => handleRoleChange('citizen')}
-                className={`px-3 py-1.5 rounded-md text-sm font-extrabold transition-all ${
+                className={`px-3 py-1.5 rounded-md text-sm font-bold transition-all ${
                   userRole === 'citizen'
-                    ? 'bg-civic-200 text-civic-950 border border-civic-400 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? 'bg-[#EEF6EE] text-[#1F5E35] border border-[#43A85F] shadow-sm'
+                    : 'text-[#52635A] hover:text-[#17312A]'
                 }`}
               >
                 Citizen
               </button>
               <button
                 onClick={() => handleRoleChange('admin')}
-                className={`px-3 py-1.5 rounded-md text-sm font-extrabold transition-all ${
+                className={`px-3 py-1.5 rounded-md text-sm font-bold transition-all ${
                   userRole === 'admin'
-                    ? 'bg-slate-200 text-slate-950 border border-slate-400 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? 'bg-[#174A2A] text-white border border-[#174A2A] shadow-sm'
+                    : 'text-[#52635A] hover:text-[#17312A]'
                 }`}
               >
                 Authority
@@ -117,19 +119,19 @@ export default function Navbar() {
               <button
                 onClick={handleLogout}
                 title={`Signed in as ${userName}`}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-[#E6E8E3] text-sm font-semibold transition-colors shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#FFFFFF] hover:bg-[#F6FAF5] text-[#17312A] border border-[#D6E4D7] text-sm font-semibold transition-all shadow-sm"
               >
-                <span className="hidden sm:inline text-slate-500 max-w-[120px] truncate">
+                <span className="hidden sm:inline text-[#52635A] max-w-[120px] truncate">
                   {userName}
                 </span>
-                <span className="text-civic-dark font-bold pl-2 border-l border-slate-200">Logout</span>
+                <span className="text-[#1F5E35] font-bold pl-2 border-l border-[#D6E4D7]">Logout</span>
               </button>
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-civic-200 hover:bg-civic-300 text-civic-950 border border-civic-400 text-sm font-bold transition-all shadow-sm"
+                className="flex items-center gap-1.5 px-5 py-2 rounded-lg bg-[#2F7D46] hover:bg-[#1F5E35] text-white text-sm font-bold transition-all shadow-sm hover:-translate-y-0.5"
               >
-                <LogIn className="w-4 h-4 text-civic-950" />
+                <LogIn className="w-4 h-4 text-white" />
                 Sign In
               </Link>
             )}

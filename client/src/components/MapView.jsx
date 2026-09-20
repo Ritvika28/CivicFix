@@ -33,7 +33,7 @@ export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom
   const hotspots = detectHotspots(issues);
 
   return (
-    <div style={{ height }} className="w-full rounded-2xl overflow-hidden border border-slate-200 shadow-sm relative group">
+    <div style={{ height }} className="w-full rounded-2xl overflow-hidden border border-[#D6E4D7] shadow-civic relative group">
       <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -47,11 +47,11 @@ export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom
             center={[spot.latitude, spot.longitude]}
             radius={spot.radiusMeters || 80}
             pathOptions={{
-              color: spot.severity === 'CRITICAL' ? '#ef4444' : spot.severity === 'HIGH' ? '#f97316' : '#2b684c',
-              fillColor: spot.severity === 'CRITICAL' ? '#ef4444' : spot.severity === 'HIGH' ? '#f97316' : '#2b684c',
-              fillOpacity: 0.12,
-              weight: 1.5,
-              dashArray: '5, 5'
+              color: spot.severity === 'CRITICAL' ? '#D9534F' : spot.severity === 'HIGH' ? '#E8A52B' : '#2F7D46',
+              fillColor: spot.severity === 'CRITICAL' ? '#D9534F' : spot.severity === 'HIGH' ? '#E8A52B' : '#43A85F',
+              fillOpacity: 0.15,
+              weight: 2,
+              dashArray: '4, 4'
             }}
           />
         ))}
@@ -64,26 +64,26 @@ export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom
               icon={createCustomIcon(issue.severity)}
             >
               <Popup>
-                <div className="p-1 min-w-[210px] space-y-1.5">
+                <div className="p-1 min-w-[210px] space-y-2">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs text-civic-600 font-bold">{issue.issueId}</span>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-civic-50 text-civic-700 font-mono flex items-center gap-1 border border-civic-200">
-                      <Layers className="w-3 h-3 text-civic-600" />
+                    <span className="font-mono text-xs text-[#2F7D46] font-bold">{issue.issueId}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-[#EEF6EE] text-[#1F5E35] font-mono flex items-center gap-1 border border-[#D6E4D7]">
+                      <Layers className="w-3 h-3 text-[#2F7D46]" />
                       {reportCount} {reportCount === 1 ? 'report' : 'reports'} → 1 incident
                     </span>
                   </div>
-                  <h4 className="font-semibold text-xs text-slate-800 line-clamp-2">{issue.description}</h4>
-                  <p className="text-[11px] text-slate-500">📍 {issue.locationLabel || 'Campus Location'}</p>
+                  <h4 className="font-extrabold text-xs text-[#17312A] line-clamp-2">{issue.description}</h4>
+                  <p className="text-[11px] text-[#52635A]">📍 {issue.locationLabel || 'Campus Location'}</p>
                   <div className="flex flex-wrap gap-1 pt-1">
                     <StatusBadge status={issue.status} />
                     <SeverityBadge severity={issue.severity} />
                   </div>
                   <Link
                     to={adminMode ? `/admin/issues/${issue.incidentId || issue.issueId}` : `/issues/${issue.issueId}`}
-                    className={`block text-center w-full mt-2 py-1.5 px-2 rounded-lg text-xs font-extrabold transition-colors shadow-sm border ${
+                    className={`block text-center w-full mt-2 py-1.5 px-2 rounded-lg text-xs font-bold transition-all shadow-sm border ${
                       adminMode
-                        ? 'bg-slate-200 hover:bg-slate-300 text-slate-950 border-slate-400'
-                        : 'bg-civic-200 hover:bg-civic-300 text-civic-950 border-civic-400'
+                        ? 'bg-[#174A2A] hover:bg-[#123D23] text-white border-[#174A2A]'
+                        : 'bg-[#2F7D46] hover:bg-[#1F5E35] text-white border-[#2F7D46]'
                     }`}
                   >
                     {adminMode ? 'Manage Work Order' : 'View Incident Details'}
@@ -96,15 +96,15 @@ export default function MapView({ issues = [], center = [26.7998, 81.0267], zoom
       </MapContainer>
 
       {/* Map Severity & Legend Overlay */}
-      <div className="absolute bottom-3 right-3 z-[1000] bg-white/95 backdrop-blur-md px-3 py-2 rounded-xl border border-slate-200 text-[11px] text-slate-600 font-mono space-y-1 shadow-md pointer-events-none sm:pointer-events-auto">
-        <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider mb-1 flex items-center gap-1">
-          <Layers className="w-3 h-3 text-civic-500" /> Severity Legend
+      <div className="absolute bottom-3 right-3 z-[1000] bg-[#FFFFFF]/95 backdrop-blur-md px-3.5 py-2.5 rounded-xl border border-[#D6E4D7] text-[11px] text-[#17312A] font-medium space-y-1 shadow-civic pointer-events-none sm:pointer-events-auto">
+        <div className="text-[10px] text-[#174A2A] uppercase font-extrabold tracking-wider mb-1 flex items-center gap-1">
+          <Layers className="w-3.5 h-3.5 text-[#2F7D46]" /> Severity Legend
         </div>
-        <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-rose-500"></span> Critical</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500"></span> High</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500"></span> Medium</span>
-          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500"></span> Low</span>
+        <div className="grid grid-cols-2 gap-x-3.5 gap-y-1">
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#D9534F]"></span> Critical</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#E8A52B]"></span> High</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#2D8CCF]"></span> Medium</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#2E9B57]"></span> Low</span>
         </div>
       </div>
     </div>
