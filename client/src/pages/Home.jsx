@@ -12,10 +12,14 @@ import {
   TrendingUp,
   Grid3X3,
   Zap,
+  Users,
+  Building2,
+  Globe2,
 } from 'lucide-react';
-import { ISSUE_CATEGORIES } from '../data/demoData';
+import { ISSUE_CATEGORIES, INITIAL_ISSUES } from '../data/demoData';
 import { AnimatedNumber } from '../hooks/useCountUp';
 import { useScrollReveal } from '../hooks/useScrollReveal';
+import MapView from '../components/MapView';
 
 const HERO_IMAGE = '/images/hero_hq.jpg';
 
@@ -69,6 +73,7 @@ const WORKFLOW_STEPS = [
 export default function Home() {
   const catSectionRef = useScrollReveal();
   const workflowSectionRef = useScrollReveal();
+  const actionSectionRef = useScrollReveal();
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   useEffect(() => {
@@ -363,6 +368,88 @@ export default function Home() {
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── CIVICFIX IN ACTION ── */}
+      <section ref={actionSectionRef} className="py-12 lg:py-14 bg-[#F6FAF5] border-t border-[#DDE4DA] civic-reveal">
+        <div className="home-container">
+          <div className="mb-6 sm:mb-8">
+            <h2 className="text-[26px] sm:text-[28px] font-extrabold text-[#14231B] tracking-tight">
+              CivicFix in Action
+            </h2>
+            <p className="text-[#5F6E65] text-[14px] sm:text-[15px] mt-1.5 font-medium max-w-xl">
+              A more connected city, built by citizens and authorities working together.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 xl:gap-6">
+            <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] hover:-translate-y-[3px] hover:shadow-[0_12px_28px_rgba(30,45,35,0.08)] transition-all duration-300 flex flex-col h-full">
+                <div className="w-10 h-10 rounded-full bg-[#EEF4EA] text-[#3F7D4A] flex items-center justify-center mb-4 shrink-0">
+                  <Users className="w-5 h-5" />
+                </div>
+                <h3 className="text-[16px] font-extrabold text-[#14231B] mb-3">For Citizens</h3>
+                <ul className="space-y-2 text-[13px] text-[#5F6E65] font-medium flex-1">
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3F7D4A] mt-1.5 shrink-0" />Report issues</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3F7D4A] mt-1.5 shrink-0" />Upload photos</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3F7D4A] mt-1.5 shrink-0" />Track reports</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3F7D4A] mt-1.5 shrink-0" />View incident status</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3F7D4A] mt-1.5 shrink-0" />Verify resolution</li>
+                </ul>
+              </div>
+
+              <div className="bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] hover:-translate-y-[3px] hover:shadow-[0_12px_28px_rgba(30,45,35,0.08)] transition-all duration-300 flex flex-col h-full">
+                <div className="w-10 h-10 rounded-full bg-[#F0F4F8] text-[#3B6A8B] flex items-center justify-center mb-4 shrink-0">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <h3 className="text-[16px] font-extrabold text-[#14231B] mb-3">For Authorities</h3>
+                <ul className="space-y-2 text-[13px] text-[#5F6E65] font-medium flex-1">
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3B6A8B] mt-1.5 shrink-0" />View incident clusters</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3B6A8B] mt-1.5 shrink-0" />Prioritize severity</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3B6A8B] mt-1.5 shrink-0" />Assign departments</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3B6A8B] mt-1.5 shrink-0" />Track work orders</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3B6A8B] mt-1.5 shrink-0" />Upload resolution evidence</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#3B6A8B] mt-1.5 shrink-0" />Mark incidents resolved</li>
+                </ul>
+              </div>
+
+              <div className="bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] hover:-translate-y-[3px] hover:shadow-[0_12px_28px_rgba(30,45,35,0.08)] transition-all duration-300 flex flex-col h-full">
+                <div className="w-10 h-10 rounded-full bg-[#F3F0F8] text-[#6B528B] flex items-center justify-center mb-4 shrink-0">
+                  <Globe2 className="w-5 h-5" />
+                </div>
+                <h3 className="text-[16px] font-extrabold text-[#14231B] mb-3">For Communities</h3>
+                <ul className="space-y-2 text-[13px] text-[#5F6E65] font-medium flex-1">
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#6B528B] mt-1.5 shrink-0" />Identify recurring issues</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#6B528B] mt-1.5 shrink-0" />Find local hotspots</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#6B528B] mt-1.5 shrink-0" />Drive better planning</li>
+                  <li className="flex items-start gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#6B528B] mt-1.5 shrink-0" />Build safer, cleaner cities</li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="lg:col-span-1 bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] flex flex-col h-full relative min-h-[300px]">
+              <div className="absolute top-4 right-4 bg-[#EEF4EA] text-[#3F7D4A] px-2 py-0.5 rounded text-[10px] font-bold tracking-wider border border-[#DDEEDB]">
+                Live Map Preview
+              </div>
+              <h3 className="text-[16px] font-extrabold text-[#14231B] mb-4 pr-24 leading-tight">
+                See where your community needs attention
+              </h3>
+              
+              <div className="flex-1 w-full rounded-xl overflow-hidden border border-[#DDE4DA] relative z-0">
+                <MapView issues={INITIAL_ISSUES} height="100%" zoom={15} />
+              </div>
+              
+              <div className="mt-4 pt-4 border-t border-[#EEF4EA]">
+                <Link
+                  to="/admin"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#3F7D4A] hover:bg-[#285D36] text-white font-bold text-[13px] transition-all"
+                >
+                  Explore Community Issues <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
