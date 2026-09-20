@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Leaf, LogOut, LogIn } from 'lucide-react';
+import { Leaf, LogOut, LogIn, User, Building2 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Navbar() {
@@ -94,22 +94,24 @@ export default function Navbar() {
               <span className="text-[11px] text-[#52635A] px-2.5 font-semibold uppercase tracking-widest hidden sm:inline">Role:</span>
               <button
                 onClick={() => handleRoleChange('citizen')}
-                className={`px-3 py-1.5 rounded-md text-sm font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-bold transition-all ${
                   userRole === 'citizen'
                     ? 'bg-[#EEF6EE] text-[#1F5E35] border border-[#43A85F] shadow-sm'
                     : 'text-[#52635A] hover:text-[#17312A]'
                 }`}
               >
+                <User size={15} />
                 Citizen
               </button>
               <button
                 onClick={() => handleRoleChange('admin')}
-                className={`px-3 py-1.5 rounded-md text-sm font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-bold transition-all ${
                   userRole === 'admin'
                     ? 'bg-[#174A2A] text-white border border-[#174A2A] shadow-sm'
                     : 'text-[#52635A] hover:text-[#17312A]'
                 }`}
               >
+                <Building2 size={15} />
                 Authority
               </button>
             </div>
