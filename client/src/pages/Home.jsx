@@ -156,6 +156,19 @@ export default function Home() {
           opacity: 1;
           color: #FFFFFF;
         }
+        .action-card {
+          transition:
+            transform 300ms cubic-bezier(0.22, 1, 0.36, 1),
+            background-color 250ms ease,
+            border-color 250ms ease,
+            box-shadow 300ms ease;
+        }
+        .action-card:hover {
+          background-color: #F1F7EF !important;
+          border-color: #9DBB98 !important;
+          transform: translateY(-4px) scale(1.01);
+          box-shadow: 0 10px 24px rgba(63, 125, 74, 0.10) !important;
+        }
       `}</style>
 
       {/* ── HERO ── */}
@@ -387,7 +400,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 xl:gap-6">
             <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] hover:-translate-y-[3px] hover:shadow-[0_12px_28px_rgba(30,45,35,0.08)] transition-all duration-300 flex flex-col h-full">
+              <div className="action-card bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] flex flex-col h-full">
                 <div className="w-10 h-10 rounded-full bg-[#EEF4EA] text-[#3F7D4A] flex items-center justify-center mb-4 shrink-0">
                   <Users className="w-5 h-5" />
                 </div>
@@ -401,7 +414,7 @@ export default function Home() {
                 </ul>
               </div>
 
-              <div className="bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] hover:-translate-y-[3px] hover:shadow-[0_12px_28px_rgba(30,45,35,0.08)] transition-all duration-300 flex flex-col h-full">
+              <div className="action-card bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] flex flex-col h-full">
                 <div className="w-10 h-10 rounded-full bg-[#F0F4F8] text-[#3B6A8B] flex items-center justify-center mb-4 shrink-0">
                   <Building2 className="w-5 h-5" />
                 </div>
@@ -416,7 +429,7 @@ export default function Home() {
                 </ul>
               </div>
 
-              <div className="bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] hover:-translate-y-[3px] hover:shadow-[0_12px_28px_rgba(30,45,35,0.08)] transition-all duration-300 flex flex-col h-full">
+              <div className="action-card bg-[#FFFFFF] p-5 rounded-[16px] border border-[#DDE4DA] shadow-[0_6px_22px_rgba(30,45,35,0.06)] flex flex-col h-full">
                 <div className="w-10 h-10 rounded-full bg-[#F3F0F8] text-[#6B528B] flex items-center justify-center mb-4 shrink-0">
                   <Globe2 className="w-5 h-5" />
                 </div>
